@@ -1,10 +1,11 @@
 import { Component, inject, signal } from '@angular/core';
 import { ApiService } from '../../services/api.service';
 import { ToastService } from '../../services/toast.service';
-import { BasePageComponent } from '../../shared/base-page.component';
+import { BaseCrudPageComponent } from '../../shared/base-crud-page.component';
 import { PAGE_IMPORTS } from '../../shared/page-imports';
 
 interface ExpenseCategoryForm { name: string; description: string; icon: string; color: string; sortOrder: number; isActive: boolean; }
+interface ExpenseCategory { id: number; name: string; description?: string; icon?: string; color?: string; sortOrder?: number; isActive?: boolean; }
 
 @Component({
   selector: 'app-expense-categories',
@@ -13,19 +14,32 @@ interface ExpenseCategoryForm { name: string; description: string; icon: string;
   templateUrl: './expense-categories.html',
   styleUrl: './expense-categories.scss',
 })
-export class ExpenseCategoriesComponent extends BasePageComponent {
+export class ExpenseCategoriesComponent extends BaseCrudPageComponent<ExpenseCategory> {
   private readonly api = inject(ApiService);
   private readonly toast = inject(ToastService);
 
-  categories = signal<any[]>([]);
-  loading = signal(true);
-  showForm = signal(false);
-  editingId = signal<number | null>(null);
+  categories = signal<ExpenseCategory[]>([]);
 
-  form: ExpenseCategoryForm = { name: '', description: '', icon: 'receipt_long', color: '#3b82f6', sortOrder: 0, isActive: true };
+  private readonly defaultForm: ExpenseCategoryForm = { name: '', description: '', icon: 'receipt_long', color: '#3b82f6', sortOrder: 0, isActive: true };
+  form: ExpenseCategoryForm = { ...this.defaultForm };
 
   protected override onBizIdChange(_bizId: number): void {
     this.load();
+  }
+
+  protected override resetForm(): void {
+    this.form = { ...this.defaultForm };
+  }
+
+  protected override populateForm(c: ExpenseCategory): void {
+    this.form = {
+      name: c.name,
+      description: c.description || '',
+      icon: c.icon || 'receipt_long',
+      color: c.color || '#3b82f6',
+      sortOrder: c.sortOrder ?? 0,
+      isActive: c.isActive !== false,
+    };
   }
 
   async load() {
@@ -37,26 +51,12 @@ export class ExpenseCategoriesComponent extends BasePageComponent {
     this.loading.set(false);
   }
 
-  openAdd() {
-    this.form = { name: '', description: '', icon: 'receipt_long', color: '#3b82f6', sortOrder: 0, isActive: true };
-    this.editingId.set(null);
-    this.showForm.set(true);
-  }
-
-  openEdit(c: any) {
-    this.form = {
-      name: c.name, description: c.description || '', icon: c.icon || 'receipt_long',
-      color: c.color || '#3b82f6', sortOrder: c.sortOrder ?? 0, isActive: c.isActive !== false,
-    };
-    this.editingId.set(c.id);
-    this.showForm.set(true);
-  }
-
   async save() {
     if (!this.form.name?.trim()) {
       this.toast.warning('يرجى إدخال اسم التصنيف');
       return;
     }
+    this.saving.set(true);
     try {
       const id = this.editingId();
       if (id !== null) {
@@ -66,14 +66,15 @@ export class ExpenseCategoriesComponent extends BasePageComponent {
         await this.api.createExpenseCategory(this.bizId, this.form);
         this.toast.success('تم إضافة التصنيف بنجاح');
       }
-      this.showForm.set(false);
+      this.closeForm();
       await this.load();
     } catch (e: unknown) {
       this.toast.error(e instanceof Error ? e.message : 'حدث خطأ');
     }
+    this.saving.set(false);
   }
 
-  async remove(c: any) {
+  async remove(c: ExpenseCategory) {
     const confirmed = await this.toast.confirm({
       title: 'تأكيد الحذف',
       message: `هل أنت متأكد من حذف التصنيف "${c.name}"؟`,

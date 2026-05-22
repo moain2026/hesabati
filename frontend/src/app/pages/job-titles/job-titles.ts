@@ -1,10 +1,11 @@
 import { Component, inject, signal } from '@angular/core';
 import { ApiService } from '../../services/api.service';
 import { ToastService } from '../../services/toast.service';
-import { BasePageComponent } from '../../shared/base-page.component';
+import { BaseCrudPageComponent } from '../../shared/base-crud-page.component';
 import { PAGE_IMPORTS } from '../../shared/page-imports';
 
 interface JobTitleForm { name: string; description: string; icon: string; color: string; }
+interface JobTitle { id: number; name: string; description?: string; icon?: string; color?: string; isActive?: boolean; [key: string]: unknown; }
 
 @Component({
   selector: 'app-job-titles',
@@ -13,19 +14,30 @@ interface JobTitleForm { name: string; description: string; icon: string; color:
   templateUrl: './job-titles.html',
   styleUrl: './job-titles.scss',
 })
-export class JobTitlesComponent extends BasePageComponent {
+export class JobTitlesComponent extends BaseCrudPageComponent<JobTitle> {
   private readonly api = inject(ApiService);
   private readonly toast = inject(ToastService);
 
-  jobTitles = signal<any[]>([]);
-  loading = signal(true);
-  showForm = signal(false);
-  editingId = signal<number | null>(null);
+  jobTitles = signal<JobTitle[]>([]);
 
-  form: JobTitleForm = { name: '', description: '', icon: 'badge', color: '#f59e0b' };
+  private readonly defaultForm: JobTitleForm = { name: '', description: '', icon: 'badge', color: '#f59e0b' };
+  form: JobTitleForm = { ...this.defaultForm };
 
   protected override onBizIdChange(_bizId: number): void {
     this.load();
+  }
+
+  protected override resetForm(): void {
+    this.form = { ...this.defaultForm };
+  }
+
+  protected override populateForm(j: JobTitle): void {
+    this.form = {
+      name: j.name,
+      description: j.description || '',
+      icon: j.icon || 'badge',
+      color: j.color || '#f59e0b',
+    };
   }
 
   async load() {
@@ -37,26 +49,12 @@ export class JobTitlesComponent extends BasePageComponent {
     this.loading.set(false);
   }
 
-  openAdd() {
-    this.form = { name: '', description: '', icon: 'badge', color: '#f59e0b' };
-    this.editingId.set(null);
-    this.showForm.set(true);
-  }
-
-  openEdit(j: any) {
-    this.form = {
-      name: j.name, description: j.description || '',
-      icon: j.icon || 'badge', color: j.color || '#f59e0b',
-    };
-    this.editingId.set(j.id);
-    this.showForm.set(true);
-  }
-
   async save() {
     if (!this.form.name?.trim()) {
       this.toast.error('يرجى إدخال المسمى الوظيفي');
       return;
     }
+    this.saving.set(true);
     try {
       if (this.editingId()) {
         await this.api.updateJobTitle(this.editingId()!, this.form);
@@ -65,14 +63,15 @@ export class JobTitlesComponent extends BasePageComponent {
         await this.api.createJobTitle(this.bizId, this.form);
         this.toast.success('تم إضافة المسمى الوظيفي بنجاح');
       }
-      this.showForm.set(false);
+      this.closeForm();
       await this.load();
     } catch (e: unknown) {
       this.toast.error(e instanceof Error ? e.message : 'حدث خطأ');
     }
+    this.saving.set(false);
   }
 
-  async remove(j: any) {
+  async remove(j: JobTitle) {
     const confirmed = await this.toast.confirm({
       title: 'تأكيد الحذف',
       message: `هل أنت متأكد من حذف المسمى الوظيفي "${j.name}"؟`,
