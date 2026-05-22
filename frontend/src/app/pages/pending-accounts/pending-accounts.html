@@ -8,42 +8,10 @@
 
   <!-- Summary Cards -->
   <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-    <div class="valex-card p-4 flex items-center gap-3">
-      <div class="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 bg-warning/10 text-warning">
-        <span class="material-icons-round">pending_actions</span>
-      </div>
-      <div>
-        <div class="text-xl font-bold">{{ items().length }}</div>
-        <div class="text-xs text-muted">إجمالي</div>
-      </div>
-    </div>
-    <div class="valex-card p-4 flex items-center gap-3">
-      <div class="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 bg-danger/10 text-danger">
-        <span class="material-icons-round">hourglass_top</span>
-      </div>
-      <div>
-        <div class="text-xl font-bold">{{ pendingCount() }}</div>
-        <div class="text-xs text-muted">معلق</div>
-      </div>
-    </div>
-    <div class="valex-card p-4 flex items-center gap-3">
-      <div class="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 bg-success/10 text-success">
-        <span class="material-icons-round">check_circle</span>
-      </div>
-      <div>
-        <div class="text-xl font-bold">{{ resolvedCount() }}</div>
-        <div class="text-xs text-muted">تم الحل</div>
-      </div>
-    </div>
-    <div class="valex-card p-4 flex items-center gap-3">
-      <div class="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 bg-info/10 text-info">
-        <span class="material-icons-round">payments</span>
-      </div>
-      <div>
-        <div class="text-xl font-bold">{{ totalAmount() | number:'1.0-0' }}</div>
-        <div class="text-xs text-muted">إجمالي المبالغ (ر.ي)</div>
-      </div>
-    </div>
+    <app-summary-card icon="pending_actions" color="warning" iconSize="sm" valueSize="md" labelSize="sm" [value]="items().length"    label="إجمالي" />
+    <app-summary-card icon="hourglass_top"   color="danger"  iconSize="sm" valueSize="md" labelSize="sm" [value]="pendingCount()"    label="معلق" />
+    <app-summary-card icon="check_circle"    color="success" iconSize="sm" valueSize="md" labelSize="sm" [value]="resolvedCount()"   label="تم الحل" />
+    <app-summary-card icon="payments"        color="info"    iconSize="sm" valueSize="md" labelSize="sm" [value]="totalAmount()" valueFormat="number" label="إجمالي المبالغ (ر.ي)" />
   </div>
 
   <!-- Filter Tabs -->

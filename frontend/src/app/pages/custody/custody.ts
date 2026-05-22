@@ -128,6 +128,16 @@ export class CustodyComponent extends BaseCrudPageComponent<CustodyRecord> {
     this.records().filter((r) => r.custodyType === this.activeTab()),
   );
 
+  /** عدد السجلات النشطة */
+  activeRecordsCount = computed(() =>
+    this.records().filter((r) => r.status === 'active').length,
+  );
+
+  /** عدد السجلات المسوّاة */
+  settledRecordsCount = computed(() =>
+    this.records().filter((r) => r.status === 'settled').length,
+  );
+
   /** TabBarItem[] لأنواع العهد */
   readonly custodyTabs = [
     { value: 'permanent' as const, label: 'دائمة', icon: 'lock' },

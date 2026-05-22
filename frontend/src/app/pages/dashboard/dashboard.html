@@ -73,42 +73,10 @@
 
     <!-- Financial Summary -->
     <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-      <div class="valex-card p-4 flex items-center gap-3">
-        <div class="w-10 h-10 rounded-lg flex items-center justify-center" style="background: rgba(34,197,94,0.12); color: #22c55e;">
-          <span class="material-icons-round text-xl">arrow_downward</span>
-        </div>
-        <div class="flex-1 min-w-0">
-          <div class="text-xs text-muted mb-1">إجمالي القبض</div>
-          <div class="font-bold text-sm truncate">{{ formatNumber(totalReceipts()) }} <span class="text-muted font-normal text-xs">ر.ي</span></div>
-        </div>
-      </div>
-      <div class="valex-card p-4 flex items-center gap-3">
-        <div class="w-10 h-10 rounded-lg flex items-center justify-center" style="background: rgba(239,68,68,0.12); color: #ef4444;">
-          <span class="material-icons-round text-xl">arrow_upward</span>
-        </div>
-        <div class="flex-1 min-w-0">
-          <div class="text-xs text-muted mb-1">إجمالي الصرف</div>
-          <div class="font-bold text-sm truncate">{{ formatNumber(totalPayments()) }} <span class="text-muted font-normal text-xs">ر.ي</span></div>
-        </div>
-      </div>
-      <div class="valex-card p-4 flex items-center gap-3">
-        <div class="w-10 h-10 rounded-lg flex items-center justify-center" style="background: rgba(99,102,241,0.12); color: #6366f1;">
-          <span class="material-icons-round text-xl">account_balance</span>
-        </div>
-        <div class="flex-1 min-w-0">
-          <div class="text-xs text-muted mb-1">صافي الأرصدة</div>
-          <div class="font-bold text-sm truncate">{{ formatNumber(netBalance()) }} <span class="text-muted font-normal text-xs">ر.ي</span></div>
-        </div>
-      </div>
-      <div class="valex-card p-4 flex items-center gap-3">
-        <div class="w-10 h-10 rounded-lg flex items-center justify-center" style="background: rgba(59,130,246,0.12); color: #3b82f6;">
-          <span class="material-icons-round text-xl">receipt_long</span>
-        </div>
-        <div class="flex-1 min-w-0">
-          <div class="text-xs text-muted mb-1">عدد العمليات</div>
-          <div class="font-bold text-sm">{{ operationsCount() }}</div>
-        </div>
-      </div>
+      <app-summary-card icon="arrow_downward" customColor="#22c55e" iconSize="sm" valueSize="sm" labelSize="sm" valueFormat="currency" currency="ر.ي" [value]="totalReceipts()" label="إجمالي القبض" />
+      <app-summary-card icon="arrow_upward"   customColor="#ef4444" iconSize="sm" valueSize="sm" labelSize="sm" valueFormat="currency" currency="ر.ي" [value]="totalPayments()" label="إجمالي الصرف" />
+      <app-summary-card icon="account_balance" customColor="#6366f1" iconSize="sm" valueSize="sm" labelSize="sm" valueFormat="currency" currency="ر.ي" [value]="netBalance()" label="صافي الأرصدة" />
+      <app-summary-card icon="receipt_long"   customColor="#3b82f6" iconSize="sm" valueSize="sm" labelSize="sm" [value]="operationsCount()" label="عدد العمليات" />
     </div>
 
     <!-- Quick Actions -->

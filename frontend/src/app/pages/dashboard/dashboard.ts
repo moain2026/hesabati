@@ -3,6 +3,7 @@ import { ApiService } from '../../services/api.service';
 import { ToastService } from '../../services/toast.service';
 import { CssBackgroundComponent } from '../../shared/components/css-background/css-background.component';
 import { StatCardComponent } from '../../shared/components/stat-card/stat-card.component';
+import { SummaryCardComponent } from '../../shared/components/summary-card/summary-card.component';
 import { NgApexchartsModule } from 'ng-apexcharts';
 import { BasePageComponent } from '../../shared/base-page.component';
 
@@ -19,7 +20,7 @@ export interface ChartClickEvent {
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CssBackgroundComponent, StatCardComponent, NgApexchartsModule],
+  imports: [CssBackgroundComponent, StatCardComponent, NgApexchartsModule, SummaryCardComponent],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.scss',
 })

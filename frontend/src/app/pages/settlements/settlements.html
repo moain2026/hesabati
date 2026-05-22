@@ -8,48 +8,10 @@
 
   <!-- Summary Cards -->
   <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-    <div class="valex-card p-4 flex items-center gap-3">
-      <div class="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 bg-warning/10 text-warning">
-        <span class="material-icons-round">balance</span>
-      </div>
-      <div>
-        <div class="text-xl font-bold">{{ filteredSettlements().length }}</div>
-        <div class="text-xs text-muted">تصفية</div>
-      </div>
-    </div>
-    <div class="valex-card p-4 flex items-center gap-3">
-      <div class="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 bg-info/10 text-info">
-        <span class="material-icons-round">arrow_upward</span>
-      </div>
-      <div>
-        <div class="text-xl font-bold">{{ totalExpected() | number:'1.0-0' }}</div>
-        <div class="text-xs text-muted">المتوقع (ر.ي)</div>
-      </div>
-    </div>
-    <div class="valex-card p-4 flex items-center gap-3">
-      <div class="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 bg-success/10 text-success">
-        <span class="material-icons-round">arrow_downward</span>
-      </div>
-      <div>
-        <div class="text-xl font-bold">{{ totalActual() | number:'1.0-0' }}</div>
-        <div class="text-xs text-muted">الفعلي (ر.ي)</div>
-      </div>
-    </div>
-    <div class="valex-card p-4 flex items-center gap-3"
-      [class.border-danger]="totalDifference() !== 0"
-      [class.valex-card-danger]="totalDifference() !== 0">
-      <div class="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0"
-        [class.bg-danger/10]="totalDifference() !== 0"
-        [class.text-danger]="totalDifference() !== 0"
-        [class.bg-success/10]="totalDifference() === 0"
-        [class.text-success]="totalDifference() === 0">
-        <span class="material-icons-round">compare_arrows</span>
-      </div>
-      <div>
-        <div class="text-xl font-bold">{{ totalDifference() | number:'1.0-0' }}</div>
-        <div class="text-xs text-muted">الفرق</div>
-      </div>
-    </div>
+    <app-summary-card icon="balance"         color="warning"               iconSize="sm" valueSize="md" labelSize="sm" [value]="filteredSettlements().length"             label="تصفية" />
+    <app-summary-card icon="arrow_upward"    color="info"                  iconSize="sm" valueSize="md" labelSize="sm" [value]="totalExpected()"   valueFormat="number"   label="المتوقع (ر.ي)" />
+    <app-summary-card icon="arrow_downward"  color="success"               iconSize="sm" valueSize="md" labelSize="sm" [value]="totalActual()"     valueFormat="number"   label="الفعلي (ر.ي)" />
+    <app-summary-card icon="compare_arrows"  [color]="differenceColor()"   iconSize="sm" valueSize="md" labelSize="sm" [value]="totalDifference()" valueFormat="number"   label="الفرق" />
   </div>
 
   <!-- Filters -->

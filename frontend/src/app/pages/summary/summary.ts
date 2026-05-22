@@ -46,6 +46,11 @@ export class SummaryComponent implements OnInit {
     this.loadAllBusinesses();
   }
 
+  /** لون بطاقة الحسابات المعلقة (danger إن وُجدت، muted إن كانت 0) */
+  pendingColor(): 'danger' | 'muted' {
+    return this.totals().pendingAccounts > 0 ? 'danger' : 'muted';
+  }
+
   async loadAllBusinesses() {
     try {
       const data: Business[] = await this.api.getBusinesses();

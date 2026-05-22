@@ -120,6 +120,11 @@ export class SettlementsComponent extends BaseCrudPageComponent<Settlement> {
   totalActual() { return this.filteredSettlements().reduce((s, r) => s + Number(r.actualAmount || 0), 0); }
   totalDifference() { return this.totalExpected() - this.totalActual(); }
 
+  /** لون بطاقة الفرق (أحمر إن ≠ 0، أخضر إن = 0) */
+  differenceColor(): 'danger' | 'success' {
+    return this.totalDifference() !== 0 ? 'danger' : 'success';
+  }
+
   async save() {
     this.saving.set(true);
     try {

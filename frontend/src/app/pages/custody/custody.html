@@ -36,42 +36,10 @@
 
   <!-- Summary -->
   <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-    <div class="valex-card p-4 flex items-center gap-3">
-      <div class="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0" style="background:rgba(168,85,247,0.1);color:#a855f7">
-        <span class="material-icons-round">account_balance_wallet</span>
-      </div>
-      <div>
-        <div class="text-xl font-bold">{{ custodyAccounts().length }}</div>
-        <div class="text-xs text-muted">حسابات العهد</div>
-      </div>
-    </div>
-    <div class="valex-card p-4 flex items-center gap-3">
-      <div class="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 bg-warning/10 text-warning">
-        <span class="material-icons-round">receipt</span>
-      </div>
-      <div>
-        <div class="text-xl font-bold">{{ records().length }}</div>
-        <div class="text-xs text-muted">سجلات العهد</div>
-      </div>
-    </div>
-    <div class="valex-card p-4 flex items-center gap-3">
-      <div class="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 bg-success/10 text-success">
-        <span class="material-icons-round">check_circle</span>
-      </div>
-      <div>
-        <div class="text-xl font-bold">{{ records().filter(r => r.status === 'active').length }}</div>
-        <div class="text-xs text-muted">نشطة</div>
-      </div>
-    </div>
-    <div class="valex-card p-4 flex items-center gap-3">
-      <div class="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 bg-primary/10 text-primary">
-        <span class="material-icons-round">done_all</span>
-      </div>
-      <div>
-        <div class="text-xl font-bold">{{ records().filter(r => r.status === 'settled').length }}</div>
-        <div class="text-xs text-muted">مسوّاة</div>
-      </div>
-    </div>
+    <app-summary-card icon="account_balance_wallet" customColor="#a855f7" iconSize="sm" valueSize="md" labelSize="sm" [value]="custodyAccounts().length"    label="حسابات العهد" />
+    <app-summary-card icon="receipt"                color="warning"        iconSize="sm" valueSize="md" labelSize="sm" [value]="records().length"           label="سجلات العهد" />
+    <app-summary-card icon="check_circle"           color="success"        iconSize="sm" valueSize="md" labelSize="sm" [value]="activeRecordsCount()"       label="نشطة" />
+    <app-summary-card icon="done_all"               color="primary"        iconSize="sm" valueSize="md" labelSize="sm" [value]="settledRecordsCount()"      label="مسوّاة" />
   </div>
 
   <!-- Tabs -->

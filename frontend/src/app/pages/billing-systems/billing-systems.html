@@ -29,18 +29,9 @@
 
   @if (!loading()) {
     <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-      <div class="valex-card p-4 flex items-center gap-3">
-        <div class="w-11 h-11 rounded-xl flex items-center justify-center bg-primary/10 text-primary flex-shrink-0">
-          <span class="material-icons-round text-2xl">receipt</span>
-        </div>
-        <div><div class="text-2xl font-bold">{{ stats().total }}</div><div class="text-xs text-muted">إجمالي الحسابات</div></div>
-      </div>
-      <div class="valex-card p-4 flex items-center gap-3">
-        <div class="w-11 h-11 rounded-xl flex items-center justify-center bg-info/10 text-info flex-shrink-0">
-          <span class="material-icons-round text-2xl">people</span>
-        </div>
-        <div><div class="text-2xl font-bold">{{ stats().employees }}</div><div class="text-xs text-muted">موظف</div></div>
-      </div>
+      <app-summary-card icon="receipt" color="primary" labelSize="sm" [value]="stats().total"     label="إجمالي الحسابات" />
+      <app-summary-card icon="people"  color="info"    labelSize="sm" [value]="stats().employees" label="موظف" />
+
       @for (s of stats().bySys; track s.name) {
         @if (s.count > 0) {
           <div class="valex-card p-4 flex items-center gap-3 cursor-pointer"
