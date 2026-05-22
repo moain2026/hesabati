@@ -11,33 +11,9 @@
   </app-page-header>
 
   <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
-    <div class="valex-card p-4 flex items-center gap-4">
-      <div class="w-12 h-12 rounded-xl flex items-center justify-center bg-primary/10 text-primary flex-shrink-0">
-        <span class="material-icons-round text-2xl">shield</span>
-      </div>
-      <div>
-        <div class="text-2xl font-bold">{{ roles().length }}</div>
-        <div class="text-sm text-muted">الأدوار</div>
-      </div>
-    </div>
-    <div class="valex-card p-4 flex items-center gap-4">
-      <div class="w-12 h-12 rounded-xl flex items-center justify-center bg-info/10 text-info flex-shrink-0">
-        <span class="material-icons-round text-2xl">people</span>
-      </div>
-      <div>
-        <div class="text-2xl font-bold">{{ users().length }}</div>
-        <div class="text-sm text-muted">المستخدمون</div>
-      </div>
-    </div>
-    <div class="valex-card p-4 flex items-center gap-4">
-      <div class="w-12 h-12 rounded-xl flex items-center justify-center bg-success/10 text-success flex-shrink-0">
-        <span class="material-icons-round text-2xl">assignment_ind</span>
-      </div>
-      <div>
-        <div class="text-2xl font-bold">{{ userRoles().length }}</div>
-        <div class="text-sm text-muted">تعيينات نشطة</div>
-      </div>
-    </div>
+    <app-summary-card icon="shield" color="primary" [value]="roles().length" label="الأدوار" />
+    <app-summary-card icon="people" color="info" [value]="users().length" label="المستخدمون" />
+    <app-summary-card icon="assignment_ind" color="success" [value]="userRoles().length" label="تعيينات نشطة" />
   </div>
 
   @if (!showForm) {

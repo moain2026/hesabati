@@ -64,6 +64,9 @@ import { DecimalPipe } from '@angular/common';
           }
         </div>
         <div class="text-sm text-muted truncate">{{ label }}</div>
+        @if (subtext) {
+          <div class="text-xs font-mono truncate" [class]="subtextClass()">{{ subtext }}</div>
+        }
       </div>
     </div>
   `,
@@ -92,6 +95,27 @@ export class SummaryCardComponent {
 
   /** عملة للعرض إذا valueFormat='currency' */
   @Input() currency = '';
+
+  /** نص إضافي تحت الـlabel (مثل المبلغ الإجمالي) */
+  @Input() subtext: string | null = null;
+
+  /** لون الـsubtext (يطابق لون البطاقة افتراضياً) */
+  @Input() subtextColor: 'inherit' | 'primary' | 'success' | 'warning' | 'danger' | 'info' | 'muted' = 'inherit';
+
+  subtextClass(): string {
+    const c = this.subtextColor === 'inherit' ? this.color : this.subtextColor;
+    const map: Record<string, string> = {
+      primary: 'text-primary',
+      success: 'text-success',
+      warning: 'text-warning',
+      danger: 'text-danger',
+      info: 'text-info',
+      muted: 'text-muted',
+      secondary: 'text-secondary',
+      accent: 'text-accent',
+    };
+    return map[c] || 'text-muted';
+  }
 
   iconBgClass(): string {
     if (this.customColor) return '';

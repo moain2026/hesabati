@@ -31,6 +31,11 @@ export class JournalComponent extends BasePageComponent {
 
   // ===== State =====
   entries       = signal<any[]>([]);
+  // Summary counts
+  balancedCount(): number { return this.entries().filter(e => e.isBalanced).length; }
+  draftCount(): number { return this.entries().filter(e => e.status === 'draft' || !e.status).length; }
+  confirmedCount(): number { return this.entries().filter(e => e.status === 'confirmed').length; }
+
   accounts      = signal<any[]>([]);
   operationTypes= signal<any[]>([]);
   currencies    = signal<any[]>([]);

@@ -32,51 +32,15 @@
   }
 
   <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 mb-6">
-    <div class="valex-card p-4 flex items-center gap-4">
-      <div class="w-12 h-12 rounded-xl flex items-center justify-center bg-primary/10 text-primary flex-shrink-0">
-        <span class="material-icons-round text-2xl">paid</span>
-      </div>
-      <div>
-        <div class="text-2xl font-bold">{{ activeCurrencies.length }}</div>
-        <div class="text-sm text-muted">عملات نشطة</div>
-      </div>
-    </div>
-
-    <div class="valex-card p-4 flex items-center gap-4">
-      <div class="w-12 h-12 rounded-xl flex items-center justify-center bg-success/10 text-success flex-shrink-0">
-        <span class="material-icons-round text-2xl">currency_exchange</span>
-      </div>
-      <div>
-        <div class="text-2xl font-bold">{{ rates.length }}</div>
-        <div class="text-sm text-muted">أسعار مسجلة</div>
-      </div>
-    </div>
-
-    <div class="valex-card p-4 flex items-center gap-4">
-      <div class="w-12 h-12 rounded-xl flex items-center justify-center bg-warning/10 text-warning flex-shrink-0">
-        <span class="material-icons-round text-2xl">star</span>
-      </div>
-      <div>
-        <div class="text-2xl font-bold">{{ defaultCurrency?.code || '—' }}</div>
-        <div class="text-sm text-muted">العملة الأساسية</div>
-      </div>
-    </div>
-
-    <div class="valex-card p-4 flex items-center gap-4">
-      <div
-        class="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0"
-        [class.bg-success/10]="exchangeDiffAccount.exists"
-        [class.text-success]="exchangeDiffAccount.exists"
-        [class.bg-danger/10]="!exchangeDiffAccount.exists"
-        [class.text-danger]="!exchangeDiffAccount.exists"
-      >
-        <span class="material-icons-round text-2xl">{{ exchangeDiffAccount.exists ? 'check_circle' : 'error' }}</span>
-      </div>
-      <div>
-        <div class="text-2xl font-bold">{{ exchangeDiffAccount.exists ? 'موجود' : 'مفقود' }}</div>
-        <div class="text-sm text-muted">حساب فروقات العملة</div>
-      </div>
-    </div>
+    <app-summary-card icon="paid" color="primary" [value]="activeCurrencies.length" label="عملات نشطة" />
+    <app-summary-card icon="currency_exchange" color="success" [value]="rates.length" label="أسعار مسجلة" />
+    <app-summary-card icon="star" color="warning" [value]="defaultCurrency?.code || '—'" valueFormat="text" label="العملة الأساسية" />
+    <app-summary-card
+      [icon]="exchangeDiffAccount.exists ? 'check_circle' : 'error'"
+      [color]="exchangeDiffAccount.exists ? 'success' : 'danger'"
+      [value]="exchangeDiffAccount.exists ? 'موجود' : 'مفقود'"
+      valueFormat="text"
+      label="حساب فروقات العملة" />
   </div>
 
   <div class="valex-card mb-6">

@@ -30,65 +30,19 @@
 
       @if (activeReport() === 'overview') {
         <div class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-4 mb-6">
-          <div class="valex-card p-4 flex items-center gap-3">
-            <div class="w-10 h-10 rounded-xl flex items-center justify-center bg-warning/10 text-warning flex-shrink-0">
-              <span class="material-icons-round">account_balance</span>
-            </div>
-            <div><div class="text-xl font-bold">{{ stats().totalAccounts }}</div><div class="text-xs text-muted">حساب</div></div>
-          </div>
-          <div class="valex-card p-4 flex items-center gap-3">
-            <div class="w-10 h-10 rounded-xl flex items-center justify-center bg-primary/10 text-primary flex-shrink-0">
-              <span class="material-icons-round">savings</span>
-            </div>
-            <div><div class="text-xl font-bold">{{ stats().totalFunds }}</div><div class="text-xs text-muted">صندوق</div></div>
-          </div>
-          <div class="valex-card p-4 flex items-center gap-3">
-            <div class="w-10 h-10 rounded-xl flex items-center justify-center bg-success/10 text-success flex-shrink-0">
-              <span class="material-icons-round">groups</span>
-            </div>
-            <div><div class="text-xl font-bold">{{ stats().totalEmployees }}</div><div class="text-xs text-muted">موظف</div></div>
-          </div>
-          <div class="valex-card p-4 flex items-center gap-3">
-            <div class="w-10 h-10 rounded-xl flex items-center justify-center bg-secondary/10 text-secondary flex-shrink-0">
-              <span class="material-icons-round">receipt_long</span>
-            </div>
-            <div><div class="text-xl font-bold">{{ stats().totalVouchers }}</div><div class="text-xs text-muted">سند</div></div>
-          </div>
-          <div class="valex-card p-4 flex items-center gap-3">
-            <div class="w-10 h-10 rounded-xl flex items-center justify-center bg-danger/10 text-danger flex-shrink-0">
-              <span class="material-icons-round">menu_book</span>
-            </div>
-            <div><div class="text-xl font-bold">{{ stats().totalJournal }}</div><div class="text-xs text-muted">قيد</div></div>
-          </div>
-          <div class="valex-card p-4 flex items-center gap-3">
-            <div class="w-10 h-10 rounded-xl flex items-center justify-center bg-info/10 text-info flex-shrink-0">
-              <span class="material-icons-round">payments</span>
-            </div>
-            <div><div class="text-xl font-bold">{{ stats().totalSalaries | number: '1.0-0' }}</div><div class="text-xs text-muted">إجمالي الرواتب</div></div>
-          </div>
+          <app-summary-card icon="account_balance" color="warning" [value]="stats().totalAccounts" label="حساب" valueSize="sm" />
+          <app-summary-card icon="savings" color="primary" [value]="stats().totalFunds" label="صندوق" valueSize="sm" />
+          <app-summary-card icon="groups" color="success" [value]="stats().totalEmployees" label="موظف" valueSize="sm" />
+          <app-summary-card icon="receipt_long" color="secondary" [value]="stats().totalVouchers" label="سند" valueSize="sm" />
+          <app-summary-card icon="menu_book" color="danger" [value]="stats().totalJournal" label="قيد" valueSize="sm" />
+          <app-summary-card icon="payments" color="info" [value]="stats().totalSalaries" label="إجمالي الرواتب" valueSize="sm" />
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-          <div class="valex-card p-4 flex items-center gap-4">
-            <div class="w-12 h-12 rounded-xl flex items-center justify-center bg-success/10 text-success flex-shrink-0">
-              <span class="material-icons-round text-2xl">arrow_downward</span>
-            </div>
-            <div>
-              <div class="text-2xl font-bold">{{ stats().receiptVouchers }}</div>
-              <div class="text-sm text-muted">سند قبض</div>
-              <div class="text-xs font-mono text-success">{{ stats().totalReceipts | number: '1.0-0' }} ر.ي</div>
-            </div>
-          </div>
-          <div class="valex-card p-4 flex items-center gap-4">
-            <div class="w-12 h-12 rounded-xl flex items-center justify-center bg-danger/10 text-danger flex-shrink-0">
-              <span class="material-icons-round text-2xl">arrow_upward</span>
-            </div>
-            <div>
-              <div class="text-2xl font-bold">{{ stats().paymentVouchers }}</div>
-              <div class="text-sm text-muted">سند صرف</div>
-              <div class="text-xs font-mono text-danger">{{ stats().totalPayments | number: '1.0-0' }} ر.ي</div>
-            </div>
-          </div>
+          <app-summary-card icon="arrow_downward" color="success" [value]="stats().receiptVouchers" label="سند قبض"
+            [subtext]="formatAmount(stats().totalReceipts) + ' ر.ي'" subtextColor="success" />
+          <app-summary-card icon="arrow_upward" color="danger" [value]="stats().paymentVouchers" label="سند صرف"
+            [subtext]="formatAmount(stats().totalPayments) + ' ر.ي'" subtextColor="danger" />
         </div>
       }
 

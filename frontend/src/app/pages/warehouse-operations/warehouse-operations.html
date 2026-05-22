@@ -13,20 +13,9 @@
   </app-page-header>
 
   <div class="grid grid-cols-2 xl:grid-cols-4 gap-4 mb-6">
-    <div class="valex-card p-4 flex items-center gap-4">
-      <div class="w-12 h-12 rounded-xl flex items-center justify-center bg-primary/10 text-primary flex-shrink-0">
-        <span class="material-icons-round text-2xl">warehouse</span>
-      </div>
-      <div><div class="text-2xl font-bold">{{ stats()['all'] }}</div><div class="text-sm text-muted">إجمالي العمليات</div></div>
-    </div>
+    <app-summary-card icon="warehouse" color="primary" [value]="stats()['all']" label="إجمالي العمليات" />
     @for (t of allTypes; track t.key) {
-      <div class="valex-card p-4 flex items-center gap-4">
-        <div class="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0"
-             [style.background]="t.color + '1a'" [style.color]="t.color">
-          <span class="material-icons-round text-2xl">{{ t.icon }}</span>
-        </div>
-        <div><div class="text-2xl font-bold">{{ stats()[t.key] }}</div><div class="text-sm text-muted">{{ t.label }}</div></div>
-      </div>
+      <app-summary-card [icon]="t.icon" [customColor]="t.color" [value]="stats()[t.key]" [label]="t.label" />
     }
   </div>
 

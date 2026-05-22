@@ -15,42 +15,10 @@
   </app-page-header>
 
   <div class="grid grid-cols-2 xl:grid-cols-4 gap-4 mb-6">
-    <div class="valex-card p-4 flex items-center gap-4">
-      <div class="w-12 h-12 rounded-xl flex items-center justify-center bg-primary/10 text-primary flex-shrink-0">
-        <span class="material-icons-round text-2xl">menu_book</span>
-      </div>
-      <div>
-        <div class="text-2xl font-bold">{{ entries().length }}</div>
-        <div class="text-sm text-muted">إجمالي القيود</div>
-      </div>
-    </div>
-    <div class="valex-card p-4 flex items-center gap-4">
-      <div class="w-12 h-12 rounded-xl flex items-center justify-center bg-success/10 text-success flex-shrink-0">
-        <span class="material-icons-round text-2xl">balance</span>
-      </div>
-      <div>
-        <div class="text-2xl font-bold">{{ entries().filter(e => e.isBalanced).length }}</div>
-        <div class="text-sm text-muted">متوازن</div>
-      </div>
-    </div>
-    <div class="valex-card p-4 flex items-center gap-4">
-      <div class="w-12 h-12 rounded-xl flex items-center justify-center bg-warning/10 text-warning flex-shrink-0">
-        <span class="material-icons-round text-2xl">edit_note</span>
-      </div>
-      <div>
-        <div class="text-2xl font-bold">{{ entries().filter(e => e.status === 'draft' || !e.status).length }}</div>
-        <div class="text-sm text-muted">مسودة</div>
-      </div>
-    </div>
-    <div class="valex-card p-4 flex items-center gap-4">
-      <div class="w-12 h-12 rounded-xl flex items-center justify-center bg-info/10 text-info flex-shrink-0">
-        <span class="material-icons-round text-2xl">check_circle</span>
-      </div>
-      <div>
-        <div class="text-2xl font-bold">{{ entries().filter(e => e.status === 'confirmed').length }}</div>
-        <div class="text-sm text-muted">مراجع</div>
-      </div>
-    </div>
+    <app-summary-card icon="menu_book" color="primary" [value]="entries().length" label="إجمالي القيود" />
+    <app-summary-card icon="balance" color="success" [value]="balancedCount()" label="متوازن" />
+    <app-summary-card icon="edit_note" color="warning" [value]="draftCount()" label="مسودة" />
+    <app-summary-card icon="check_circle" color="info" [value]="confirmedCount()" label="مراجع" />
   </div>
 
   @if (showTypesPanel()) {

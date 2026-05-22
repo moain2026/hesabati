@@ -223,6 +223,20 @@ export class ReportsAdvancedComponent extends BasePageComponent {
 
   fmt(v: any): string { return fmt(v); }
 
+  // ===== Card color helpers (for SummaryCardComponent) =====
+  netProfitColor(): 'primary' | 'warning' {
+    return (this.profitLoss?.summary?.net_profit ?? this.profitLoss?.summary?.netProfit ?? 0) >= 0 ? 'primary' : 'warning';
+  }
+  trialBalancedColor(): 'success' | 'warning' {
+    return this.trialBalance?.totals?.isBalanced ? 'success' : 'warning';
+  }
+  trialBalancedIcon(): string {
+    return this.trialBalance?.totals?.isBalanced ? 'check_circle' : 'warning';
+  }
+  trialBalancedLabel(): string {
+    return this.trialBalance?.totals?.isBalanced ? 'متوازن' : 'غير متوازن';
+  }
+
   getSourceTypeLabel(s: any): string {
     const m: Record<string, string> = {
       payment_voucher: 'سند صرف', receipt_voucher: 'سند قبض',

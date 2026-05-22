@@ -12,17 +12,11 @@
 
   <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 mb-6">
     @for (key of statusKeys; track key) {
-      <div class="valex-card p-4 flex items-center gap-4 purchase-stat-card">
-        <div class="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 purchase-stat-icon"
-             [style.background]="statusMeta[key].color + '1a'"
-             [style.color]="statusMeta[key].color">
-          <span class="material-icons-round text-2xl">{{ statusMeta[key].icon }}</span>
-        </div>
-        <div>
-          <div class="text-2xl font-bold">{{ statusCount(key) }}</div>
-          <div class="text-sm text-muted">{{ statusMeta[key].label }}</div>
-        </div>
-      </div>
+      <app-summary-card
+        [icon]="statusMeta[key].icon"
+        [customColor]="statusMeta[key].color"
+        [value]="statusCount(key)"
+        [label]="statusMeta[key].label" />
     }
   </div>
 

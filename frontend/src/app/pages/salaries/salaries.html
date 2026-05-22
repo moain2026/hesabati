@@ -8,33 +8,9 @@
 
   <!-- Summary Cards -->
   <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
-    <div class="valex-card p-4 flex items-center gap-4">
-      <div class="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 bg-info/10 text-info">
-        <span class="material-icons-round text-2xl">people</span>
-      </div>
-      <div>
-        <div class="text-2xl font-bold">{{ items().length }}</div>
-        <div class="text-sm text-muted">عدد السجلات</div>
-      </div>
-    </div>
-    <div class="valex-card p-4 flex items-center gap-4">
-      <div class="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 bg-success/10 text-success">
-        <span class="material-icons-round text-2xl">payments</span>
-      </div>
-      <div>
-        <div class="text-2xl font-bold">{{ totalNet() | number:'1.0-0' }}</div>
-        <div class="text-sm text-muted">إجمالي صافي الرواتب</div>
-      </div>
-    </div>
-    <div class="valex-card p-4 flex items-center gap-4">
-      <div class="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 bg-warning/10 text-warning">
-        <span class="material-icons-round text-2xl">check_circle</span>
-      </div>
-      <div>
-        <div class="text-2xl font-bold">{{ paidCount() }}</div>
-        <div class="text-sm text-muted">مدفوعة</div>
-      </div>
-    </div>
+    <app-summary-card icon="people" color="info" [value]="items().length" label="عدد السجلات" />
+    <app-summary-card icon="payments" color="success" [value]="totalNet()" label="إجمالي صافي الرواتب" />
+    <app-summary-card icon="check_circle" color="warning" [value]="paidCount()" label="مدفوعة" />
   </div>
 
   <!-- Filters -->
