@@ -271,32 +271,6 @@
     </div>
   }
 
-  <!-- Delete Confirmation Modal -->
-  @if (showDeleteConfirm()) {
-    <div class="valex-modal-overlay" (click)="showDeleteConfirm.set(false)">
-      <div class="valex-modal valex-modal-sm" (click)="$event.stopPropagation()">
-        <div class="valex-modal-header">
-          <div class="flex items-center gap-3">
-            <div class="w-9 h-9 rounded-lg flex items-center justify-center bg-danger/10 text-danger">
-              <span class="material-icons-round">warning</span>
-            </div>
-            <h3 class="valex-modal-title">تأكيد الحذف</h3>
-          </div>
-          <button class="valex-icon-btn" (click)="showDeleteConfirm.set(false)">
-            <span class="material-icons-round">close</span>
-          </button>
-        </div>
-        <div class="valex-modal-body">
-          <p class="font-semibold mb-2">هل أنت متأكد من حذف <strong>{{ deleteTarget()?.name }}</strong>؟</p>
-          <p class="text-danger text-sm">هذا الإجراء لا يمكن التراجع عنه</p>
-        </div>
-        <div class="valex-modal-footer">
-          <button class="valex-btn valex-btn-outline" (click)="showDeleteConfirm.set(false)">إلغاء</button>
-          <button class="valex-btn valex-btn-danger" (click)="executeDelete()">
-            <span class="material-icons-round">delete</span> حذف
-          </button>
-        </div>
-      </div>
-    </div>
-  }
+  <!-- Delete confirmation now handled by ConfirmDialogService (SweetAlert2) -->
+
 </div>

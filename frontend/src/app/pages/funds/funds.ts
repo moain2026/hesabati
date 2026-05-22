@@ -3,6 +3,7 @@ import { ApiService } from '../../services/api.service';
 import { ToastService } from '../../services/toast.service';
 import { BasePageComponent } from '../../shared/base-page.component';
 import { PAGE_IMPORTS } from '../../shared/page-imports';
+import { ConfirmDialogService } from '../../shared/components/confirm-dialog/confirm-dialog.service';
 
 interface FundForm {
   name: string;
@@ -32,6 +33,7 @@ interface FundTypeForm {
 export class FundsComponent extends BasePageComponent {
   private readonly api = inject(ApiService);
   private readonly toast = inject(ToastService);
+  private readonly confirmDialog = inject(ConfirmDialogService);
 
   // إصلاح #4: استخدام funds بدلاً من accounts
   fundsData = signal<any[]>([]);
@@ -69,8 +71,7 @@ export class FundsComponent extends BasePageComponent {
     color: '#4CAF50',
   };
 
-  // Delete confirm
-  showDeleteConfirm = signal(false);
+  // Delete state (kept for compatibility — populated by confirmDelete)
   deleteTarget = signal<{ type: 'fund' | 'type'; id: number; name: string } | null>(null);
 
   iconOptions = [
@@ -309,10 +310,15 @@ export class FundsComponent extends BasePageComponent {
   }
 
   // ============ Delete ============
-  confirmDelete(type: 'fund' | 'type' | 'account', id: number, name: string) {
+  async confirmDelete(type: 'fund' | 'type' | 'account', id: number, name: string) {
     const actualType = type === 'account' ? 'fund' : type;
     this.deleteTarget.set({ type: actualType === 'fund' ? 'fund' : 'type', id, name });
-    this.showDeleteConfirm.set(true);
+    const ok = await this.confirmDialog.danger(
+      'تأكيد الحذف',
+      `هل أنت متأكد من حذف <strong>${name}</strong>؟<br><span class="text-sm text-muted">هذا الإجراء لا يمكن التراجع عنه</span>`,
+    );
+    if (ok) await this.executeDelete();
+    else this.deleteTarget.set(null);
   }
 
   async executeDelete() {
@@ -324,7 +330,6 @@ export class FundsComponent extends BasePageComponent {
       } else {
         await this.api.deleteFundType(target.id);
       }
-      this.showDeleteConfirm.set(false);
       this.deleteTarget.set(null);
       this.toast.success('تم الحذف بنجاح');
       await this.load();
