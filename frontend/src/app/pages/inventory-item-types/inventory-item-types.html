@@ -18,33 +18,9 @@
   </app-page-header>
 
   <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 mb-6">
-    <div class="valex-card p-4 flex items-center gap-4">
-      <div class="w-12 h-12 rounded-xl flex items-center justify-center bg-primary/10 text-primary flex-shrink-0">
-        <span class="material-icons-round text-2xl">inventory_2</span>
-      </div>
-      <div>
-        <div class="text-2xl font-bold">{{ items().length }}</div>
-        <div class="text-sm text-muted">إجمالي الأصناف</div>
-      </div>
-    </div>
-    <div class="valex-card p-4 flex items-center gap-4">
-      <div class="w-12 h-12 rounded-xl flex items-center justify-center bg-success/10 text-success flex-shrink-0">
-        <span class="material-icons-round text-2xl">check_circle</span>
-      </div>
-      <div>
-        <div class="text-2xl font-bold">{{ items().filter(i => i.isActive !== false).length }}</div>
-        <div class="text-sm text-muted">أصناف نشطة</div>
-      </div>
-    </div>
-    <div class="valex-card p-4 flex items-center gap-4">
-      <div class="w-12 h-12 rounded-xl flex items-center justify-center bg-warning/10 text-warning flex-shrink-0">
-        <span class="material-icons-round text-2xl">category</span>
-      </div>
-      <div>
-        <div class="text-2xl font-bold">{{ types().length }}</div>
-        <div class="text-sm text-muted">أنواع الأصناف</div>
-      </div>
-    </div>
+    <app-summary-card icon="inventory_2" color="primary" [value]="items().length" label="إجمالي الأصناف" />
+    <app-summary-card icon="check_circle" color="success" [value]="activeItemsCount()" label="أصناف نشطة" />
+    <app-summary-card icon="category" color="warning" [value]="types().length" label="أنواع الأصناف" />
   </div>
 
   <div class="valex-card mb-6">

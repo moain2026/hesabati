@@ -7,6 +7,7 @@ import { PageHeaderComponent } from './components/page-header/page-header';
 import { DataTableComponent } from './components/data-table/data-table';
 import { FilterBarComponent } from './components/filter-bar/filter-bar';
 import { StatCardComponent } from './components/stat-card/stat-card.component';
+import { SummaryCardComponent } from './components/summary-card/summary-card.component';
 
 /**
  * الاستيرادات المشتركة لجميع صفحات CRUD.
@@ -24,6 +25,7 @@ export const PAGE_IMPORTS = [
   DataTableComponent,
   FilterBarComponent,
   StatCardComponent,
+  SummaryCardComponent,
 ] as const;
 
 // Re-exports للراحة
@@ -32,4 +34,5 @@ export { DataTableComponent } from './components/data-table/data-table';
 export type { TableColumn } from './components/data-table/data-table';
 export { FilterBarComponent } from './components/filter-bar/filter-bar';
 export { StatCardComponent } from './components/stat-card/stat-card.component';
+export { SummaryCardComponent } from './components/summary-card/summary-card.component';
 export { ConfirmDialogService } from './components/confirm-dialog/confirm-dialog.service';

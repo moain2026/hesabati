@@ -8,33 +8,9 @@
 
   <!-- Summary -->
   <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
-    <div class="valex-card p-4 flex items-center gap-4">
-      <div class="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 bg-warning/10 text-warning">
-        <span class="material-icons-round text-2xl">groups</span>
-      </div>
-      <div>
-        <div class="text-2xl font-bold">{{ partners().length }}</div>
-        <div class="text-sm text-muted">شريك</div>
-      </div>
-    </div>
-    <div class="valex-card p-4 flex items-center gap-4">
-      <div class="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 bg-primary/10 text-primary">
-        <span class="material-icons-round text-2xl">pie_chart</span>
-      </div>
-      <div>
-        <div class="text-2xl font-bold">{{ totalShares() | number: '1.0-2' }}%</div>
-        <div class="text-sm text-muted">إجمالي الحصص</div>
-      </div>
-    </div>
-    <div class="valex-card p-4 flex items-center gap-4">
-      <div class="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 bg-success/10 text-success">
-        <span class="material-icons-round text-2xl">business</span>
-      </div>
-      <div>
-        <div class="text-base font-bold">{{ business()?.name || '-' }}</div>
-        <div class="text-sm text-muted">العمل</div>
-      </div>
-    </div>
+    <app-summary-card icon="groups" color="warning" [value]="partners().length" label="شريك" />
+    <app-summary-card icon="pie_chart" color="primary" [value]="totalShares()" valueFormat="percent" label="إجمالي الحصص" />
+    <app-summary-card icon="business" color="success" [value]="business()?.name || '-'" valueFormat="text" valueSize="sm" label="العمل" />
   </div>
 
   <!-- الحصص البصرية -->

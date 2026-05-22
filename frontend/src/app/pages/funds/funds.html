@@ -9,24 +9,8 @@
   <!-- Summary -->
   @if (!showFundForm() && !loading()) {
   <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
-    <div class="valex-card p-4 flex items-center gap-4">
-      <div class="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 bg-success/10 text-success">
-        <span class="material-icons-round text-2xl">inventory_2</span>
-      </div>
-      <div>
-        <div class="text-2xl font-bold">{{ accounts().length }}</div>
-        <div class="text-sm text-muted">إجمالي الصناديق</div>
-      </div>
-    </div>
-    <div class="valex-card p-4 flex items-center gap-4">
-      <div class="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 bg-secondary/10 text-secondary">
-        <span class="material-icons-round text-2xl">filter_list</span>
-      </div>
-      <div>
-        <div class="text-2xl font-bold">{{ filteredData().length }}</div>
-        <div class="text-sm text-muted">نتائج</div>
-      </div>
-    </div>
+    <app-summary-card icon="inventory_2" color="success" [value]="accounts().length" label="إجمالي الصناديق" />
+    <app-summary-card icon="filter_list" color="secondary" [value]="filteredData().length" label="نتائج" />
   </div>
 
   }

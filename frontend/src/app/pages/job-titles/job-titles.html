@@ -8,15 +8,7 @@
 
   <!-- Summary -->
   <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
-    <div class="valex-card p-4 flex items-center gap-4">
-      <div class="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0" style="background: rgba(245,158,11,0.12); color: #f59e0b;">
-        <span class="material-icons-round text-2xl">badge</span>
-      </div>
-      <div>
-        <div class="text-2xl font-bold">{{ jobTitles().length }}</div>
-        <div class="text-sm text-muted">إجمالي المسميات</div>
-      </div>
-    </div>
+    <app-summary-card icon="badge" customColor="#f59e0b" [value]="jobTitles().length" label="إجمالي المسميات" />
   </div>
 
   @if (loading()) {

@@ -8,15 +8,7 @@
 
   <!-- Summary -->
   <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
-    <div class="valex-card p-4 flex items-center gap-4">
-      <div class="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 bg-primary/10 text-primary">
-        <span class="material-icons-round text-2xl">category</span>
-      </div>
-      <div>
-        <div class="text-2xl font-bold">{{ categories().length }}</div>
-        <div class="text-sm text-muted">إجمالي التصنيفات</div>
-      </div>
-    </div>
+    <app-summary-card icon="category" color="primary" [value]="categories().length" label="إجمالي التصنيفات" />
   </div>
 
   @if (loading()) {

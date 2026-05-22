@@ -23,6 +23,8 @@ export class InventoryItemTypesComponent extends BasePageComponent {
   types = signal<any[]>([]);
   loading = signal(true);
 
+  activeItemsCount(): number { return this.items().filter((i: any) => i.isActive !== false).length; }
+
   // ===== Tabs =====
   activeTab = signal<'items' | 'types'>('items');
 

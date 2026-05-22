@@ -8,24 +8,8 @@
 
   <!-- Summary -->
   <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
-    <div class="valex-card p-4 flex items-center gap-4">
-      <div class="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 bg-primary/10 text-primary">
-        <span class="material-icons-round text-2xl">account_balance</span>
-      </div>
-      <div>
-        <div class="text-2xl font-bold">{{ accounts().length }}</div>
-        <div class="text-sm text-muted">إجمالي البنوك</div>
-      </div>
-    </div>
-    <div class="valex-card p-4 flex items-center gap-4">
-      <div class="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 bg-secondary/10 text-secondary">
-        <span class="material-icons-round text-2xl">filter_list</span>
-      </div>
-      <div>
-        <div class="text-2xl font-bold">{{ filteredData().length }}</div>
-        <div class="text-sm text-muted">نتائج</div>
-      </div>
-    </div>
+    <app-summary-card icon="account_balance" color="primary" [value]="accounts().length" label="إجمالي البنوك" />
+    <app-summary-card icon="filter_list" color="secondary" [value]="filteredData().length" label="نتائج" />
   </div>
 
   <!-- Filter Tabs -->

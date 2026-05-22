@@ -33,6 +33,9 @@ export class ReconciliationsComponent extends BaseCrudPageComponent<Reconciliati
   reconciliations = signal<Reconciliation[]>([]);
   viewingItem = signal<any>(null);
 
+  completedCount(): number { return this.reconciliations().filter(r => r.status === 'completed').length; }
+  pendingCount(): number { return this.reconciliations().filter(r => r.status === 'open' || r.status === 'in_progress').length; }
+
   private readonly defaultForm: ReconciliationForm = {
     title: '', reconciliationType: 'manager', accountId: null, fundId: null,
     periodStart: '', periodEnd: '', expectedAmount: 0, actualAmount: 0, notes: '',
