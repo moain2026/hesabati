@@ -1,4 +1,4 @@
-@use '../shared-page.scss';
+@use '../../shared/styles/page-base.scss';
 
 .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 16px; }
 .card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 14px; padding: 16px; }

@@ -1,4 +1,4 @@
-@use '../shared-page.scss';
+@use '../../shared/styles/page-base.scss';
 
 .summary-biz-card {
   border-top: 3px solid var(--biz-color, var(--color-primary));

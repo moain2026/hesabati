@@ -1,4 +1,4 @@
-@use '../shared-page.scss';
+@use '../../shared/styles/page-base.scss';
 
 .ot-cat-card {
   border-top: 3px solid var(--cat-color, var(--color-primary));

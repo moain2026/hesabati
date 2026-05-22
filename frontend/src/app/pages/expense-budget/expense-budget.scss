@@ -1,4 +1,4 @@
-@use '../shared-page.scss';
+@use '../../shared/styles/page-base.scss';
 
 .summary-row { display: flex; gap: 16px; margin-bottom: 20px; flex-wrap: wrap; }
 .summary-card {
