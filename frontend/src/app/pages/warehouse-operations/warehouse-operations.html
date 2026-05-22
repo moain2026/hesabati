@@ -90,7 +90,7 @@
             </button>
           }
         </div>
-        <button class="valex-icon-btn" (click)="showForm.set(false)"><span class="material-icons-round">close</span></button>
+        <button class="valex-icon-btn" (click)="closeForm()"><span class="material-icons-round">close</span></button>
       </div>
 
       <div class="valex-card-body">
@@ -201,7 +201,7 @@
       </div>
 
       <div class="valex-card-footer flex items-center justify-end gap-3">
-        <button class="valex-btn valex-btn-outline" (click)="showForm.set(false)">إلغاء</button>
+        <button class="valex-btn valex-btn-outline" (click)="closeForm()">إلغاء</button>
         <button class="valex-btn valex-btn-outline" [disabled]="saving()" (click)="formHeader.update(h=>({...h,status:'draft'}));save()">
           <span class="material-icons-round">save</span> حفظ كمسودة
         </button>

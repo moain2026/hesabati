@@ -1,8 +1,29 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { ApiService } from '../../services/api.service';
 import { ToastService } from '../../services/toast.service';
-import { BasePageComponent } from '../../shared/base-page.component';
+import { BaseCrudPageComponent } from '../../shared/base-crud-page.component';
 import { PAGE_IMPORTS } from '../../shared/page-imports';
+
+interface Station {
+  id: number;
+  name: string;
+  code?: string;
+  location?: string;
+  isActive?: boolean;
+  notes?: string;
+  billingSystems?: string[] | string;
+  sequenceNumber?: string | number;
+  hasEmployees?: boolean;
+}
+
+interface StationForm {
+  name: string;
+  code: string;
+  location: string;
+  isActive: boolean;
+  notes: string;
+  billingSystemsStr: string;
+}
 
 @Component({
   selector: 'app-stations',
@@ -11,36 +32,55 @@ import { PAGE_IMPORTS } from '../../shared/page-imports';
   templateUrl: './stations.html',
   styleUrl: './stations.scss',
 })
-export class StationsComponent extends BasePageComponent {
+export class StationsComponent extends BaseCrudPageComponent<Station> {
   private readonly api = inject(ApiService);
   private readonly toast = inject(ToastService);
 
-  stations = signal<any[]>([]);
+  stations = signal<Station[]>([]);
   billingSystems = signal<any[]>([]);
-  loading = signal(true);
-  saving = signal(false);
 
-  showForm = signal(false);
-  editingStation = signal<any>(null);
-  form = signal<{
-    name: string;
-    code: string;
-    location: string;
-    isActive: boolean;
-    notes: string;
-    billingSystemsStr: string;
-  }>({
+  // backward-compat: editingStation derived from editingId + stations list
+  editingStation = computed<Station | null>(() => {
+    const id = this.editingId();
+    if (id === null) return null;
+    return this.stations().find(s => s.id === id) ?? null;
+  });
+
+  private readonly defaultFormValue: StationForm = {
     name: '',
     code: '',
     location: '',
     isActive: true,
     notes: '',
     billingSystemsStr: '',
-  });
+  };
+
+  form = signal<StationForm>({ ...this.defaultFormValue });
 
   protected override onBizIdChange(_bizId: number): void {
     this.load();
   }
+
+  protected resetForm(): void {
+    this.form.set({ ...this.defaultFormValue });
+  }
+
+  protected populateForm(s: Station & { id: number }): void {
+    const billingStr = Array.isArray(s.billingSystems)
+      ? s.billingSystems.join(', ')
+      : (s.billingSystems || '');
+    this.form.set({
+      name: s.name || '',
+      code: s.code || '',
+      location: s.location || '',
+      isActive: s.isActive !== false,
+      notes: s.notes || '',
+      billingSystemsStr: billingStr,
+    });
+  }
+
+  // Backward-compat alias for templates that call openCreate()
+  openCreate(): void { this.openAdd(); }
 
   async load() {
     this.loading.set(true);
@@ -56,38 +96,6 @@ export class StationsComponent extends BasePageComponent {
       this.toast.error(e instanceof Error ? e.message : 'حدث خطأ أثناء تحميل المحطات');
     }
     this.loading.set(false);
-  }
-
-  openCreate() {
-    this.editingStation.set(null);
-    this.form.set({
-      name: '',
-      code: '',
-      location: '',
-      isActive: true,
-      notes: '',
-      billingSystemsStr: '',
-    });
-    this.showForm.set(true);
-  }
-
-  openEdit(s: any) {
-    this.editingStation.set(s);
-    const billingStr = Array.isArray(s.billingSystems) ? s.billingSystems.join(', ') : (s.billingSystems || '');
-    this.form.set({
-      name: s.name || '',
-      code: s.code || '',
-      location: s.location || '',
-      isActive: s.isActive !== false,
-      notes: s.notes || '',
-      billingSystemsStr: billingStr,
-    });
-    this.showForm.set(true);
-  }
-
-  closeForm() {
-    this.showForm.set(false);
-    this.editingStation.set(null);
   }
 
   getBillingSystemsArray(str: string): string[] {
@@ -117,9 +125,9 @@ export class StationsComponent extends BasePageComponent {
         billingSystems: this.getBillingSystemsArray(f.billingSystemsStr),
       };
 
-      const editing = this.editingStation();
-      if (editing) {
-        await this.api.updateStationByBiz(this.bizId, editing.id, payload);
+      const editingId = this.editingId();
+      if (editingId !== null) {
+        await this.api.updateStationByBiz(this.bizId, editingId, payload);
         this.toast.success('تم تحديث المحطة بنجاح');
       } else {
         await this.api.createStation(this.bizId, payload);
@@ -134,7 +142,7 @@ export class StationsComponent extends BasePageComponent {
     }
   }
 
-  async deleteStation(s: any) {
+  async deleteStation(s: Station) {
     const confirmed = await this.toast.confirm({
       title: 'تأكيد الحذف',
       message: `هل تريد حذف المحطة "${s.name}"؟`,

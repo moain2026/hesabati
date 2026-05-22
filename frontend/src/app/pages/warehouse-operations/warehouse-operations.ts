@@ -1,7 +1,7 @@
 import { Component, inject, signal, computed } from '@angular/core';
 import { ApiService } from '../../services/api.service';
 import { ToastService } from '../../services/toast.service';
-import { BasePageComponent } from '../../shared/base-page.component';
+import { BaseCrudPageComponent } from '../../shared/base-crud-page.component';
 import { PAGE_IMPORTS } from '../../shared/page-imports';
 
 interface WopItem {
@@ -12,6 +12,21 @@ interface WopItem {
   unitCost:  number;
   unit:      string;
   notes:     string;
+}
+
+interface WarehouseOperation {
+  id: number;
+  operationType: string;
+  operationNumber?: string;
+  operationDate?: string;
+  sourceWarehouseId?: number | null;
+  destinationWarehouseId?: number | null;
+  supplierId?: number | null;
+  description?: string;
+  reference?: string;
+  status?: string;
+  totalCost?: number | string;
+  items?: any[];
 }
 
 const OP_META: Record<string, { label: string; icon: string; color: string }> = {
@@ -29,20 +44,17 @@ const OP_META: Record<string, { label: string; icon: string; color: string }> = 
   templateUrl: './warehouse-operations.html',
   styleUrl:    './warehouse-operations.scss',
 })
-export class WarehouseOperationsComponent extends BasePageComponent {
+export class WarehouseOperationsComponent extends BaseCrudPageComponent<WarehouseOperation> {
   private readonly api   = inject(ApiService);
   private readonly toast = inject(ToastService);
 
   // ===== Data =====
-  operations  = signal<any[]>([]);
+  operations  = signal<WarehouseOperation[]>([]);
   warehouses  = signal<any[]>([]);
   suppliers   = signal<any[]>([]);
   inventoryItems = signal<any[]>([]);
   operationTypes = signal<any[]>([]);
-  loading  = signal(true);
-  saving   = signal(false);
   error    = signal('');
-  showForm = signal(false);
   expandedId = signal<number | null>(null);
 
   // ===== Tabs =====
@@ -123,17 +135,27 @@ export class WarehouseOperationsComponent extends BasePageComponent {
     return { itemId: null, itemName: '', itemCode: '', quantity: 1, unitCost: 0, unit: 'قطعة', notes: '' };
   }
 
-  openNew(type = 'supply_invoice') {
+  protected resetForm(): void {
     this.formHeader.set({
-      operationType: type, sourceWarehouseId: null, destinationWarehouseId: null,
+      operationType: 'supply_invoice', sourceWarehouseId: null, destinationWarehouseId: null,
       operationTypeId: null, supplierId: null, relatedOperationId: null,
       operationDate: new Date().toISOString().split('T')[0],
       description: '', reference: '', status: 'draft',
     });
     this.formItems.set([this.newItem()]);
     this.error.set('');
+  }
+
+  protected populateForm(_op: WarehouseOperation & { id: number }): void {
+    // edit not supported for warehouse operations (create-only flow)
+  }
+
+  openNew(type = 'supply_invoice') {
+    this.resetForm();
+    this.formHeader.update(h => ({ ...h, operationType: type }));
+    this.editingId.set(null);
     this.showForm.set(true);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    this.scrollToTop();
   }
 
   addItem()    { this.formItems.update(ls => [...ls, this.newItem()]); }
@@ -170,10 +192,10 @@ export class WarehouseOperationsComponent extends BasePageComponent {
     try {
       await this.api.createWarehouseOperation(this.bizId, { ...h, items: validItems });
       this.toast.success('تم إنشاء العملية المخزنية بنجاح');
-      this.showForm.set(false);
+      this.closeForm();
       await this.load();
     } catch (e: unknown) { this.error.set(e instanceof Error ? e.message : 'حدث خطأ'); }
-    this.saving.set(false);
+    finally { this.saving.set(false); }
   }
 
   toggleExpand(id: number) { this.expandedId.set(this.expandedId() === id ? null : id); }
@@ -186,9 +208,9 @@ export class WarehouseOperationsComponent extends BasePageComponent {
     catch { return String(d); }
   }
 
-  getWarehouseName(id: number | null) { return id ? (this.warehouses().find((w: any) => w.id === id)?.name || '—') : '—'; }
-  getSupplierName(id: number | null)  { return id ? (this.suppliers().find((s: any) => s.id === id)?.name || '—') : '—'; }
-  getItemName(id: number | null)      { return id ? (this.inventoryItems().find((i: any) => i.id === id)?.name || '—') : '—'; }
+  getWarehouseName(id: number | null | undefined) { return id ? (this.warehouses().find((w: any) => w.id === id)?.name || '—') : '—'; }
+  getSupplierName(id: number | null | undefined)  { return id ? (this.suppliers().find((s: any) => s.id === id)?.name || '—') : '—'; }
+  getItemName(id: number | null | undefined)      { return id ? (this.inventoryItems().find((i: any) => i.id === id)?.name || '—') : '—'; }
 
   printOperation(op: any) {
     const meta = this.meta(op.operationType);
