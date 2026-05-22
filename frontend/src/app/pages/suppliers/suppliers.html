@@ -70,7 +70,7 @@
           <h3 class="valex-card-title">{{ editingId() ? 'تعديل مورد' : 'إضافة مورد جديد' }}</h3>
           @if (editingId()) { <span class="valex-badge valex-badge-warning">تعديل</span> }
         </div>
-        <button class="valex-icon-btn" (click)="showForm.set(false)">
+        <button class="valex-icon-btn" (click)="closeForm()">
           <span class="material-icons-round">close</span>
         </button>
       </div>
@@ -136,7 +136,7 @@
         </div>
       </div>
       <div class="valex-card-footer flex items-center justify-end gap-3">
-        <button class="valex-btn valex-btn-outline" (click)="showForm.set(false)">إلغاء</button>
+        <button class="valex-btn valex-btn-outline" (click)="closeForm()">إلغاء</button>
         <button class="valex-btn valex-btn-primary" (click)="save()">
           <span class="material-icons-round">save</span>
           {{ editingId() ? 'حفظ التعديلات' : 'إضافة المورد' }}

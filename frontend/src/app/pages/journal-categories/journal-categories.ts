@@ -1,10 +1,20 @@
 import { Component, inject, signal } from '@angular/core';
 import { ApiService } from '../../services/api.service';
 import { ToastService } from '../../services/toast.service';
-import { BasePageComponent } from '../../shared/base-page.component';
+import { BaseCrudPageComponent } from '../../shared/base-crud-page.component';
 import { PAGE_IMPORTS } from '../../shared/page-imports';
 
 interface JournalCategoryForm { name: string; categoryKey: string; description: string; icon: string; color: string; }
+interface JournalCategory extends JournalCategoryForm {
+  id: number;
+  isSystem?: boolean;
+  isActive?: boolean;
+  code?: string;
+  accountCode?: string;
+  accountLedgerCode?: string;
+  accountSequence?: string | number;
+  sequenceNumber?: string | number;
+}
 
 @Component({
   selector: 'app-journal-categories',
@@ -13,19 +23,31 @@ interface JournalCategoryForm { name: string; categoryKey: string; description: 
   templateUrl: './journal-categories.html',
   styleUrl: './journal-categories.scss',
 })
-export class JournalCategoriesComponent extends BasePageComponent {
+export class JournalCategoriesComponent extends BaseCrudPageComponent<JournalCategory> {
   private readonly api = inject(ApiService);
   private readonly toast = inject(ToastService);
 
-  categories = signal<any[]>([]);
-  loading = signal(true);
-  showForm = signal(false);
-  editingId = signal<number | null>(null);
+  categories = signal<JournalCategory[]>([]);
 
-  form: JournalCategoryForm = { name: '', categoryKey: '', description: '', icon: 'book', color: '#6366f1' };
+  private readonly defaultForm: JournalCategoryForm = { name: '', categoryKey: '', description: '', icon: 'book', color: '#6366f1' };
+  form: JournalCategoryForm = { ...this.defaultForm };
 
   protected override onBizIdChange(_bizId: number): void {
     this.load();
+  }
+
+  protected override resetForm(): void {
+    this.form = { ...this.defaultForm };
+  }
+
+  protected override populateForm(c: JournalCategory): void {
+    this.form = {
+      name: c.name,
+      categoryKey: c.categoryKey,
+      description: c.description || '',
+      icon: c.icon || 'book',
+      color: c.color || '#6366f1',
+    };
   }
 
   async load() {
@@ -37,26 +59,12 @@ export class JournalCategoriesComponent extends BasePageComponent {
     this.loading.set(false);
   }
 
-  openAdd() {
-    this.form = { name: '', categoryKey: '', description: '', icon: 'book', color: '#6366f1' };
-    this.editingId.set(null);
-    this.showForm.set(true);
-  }
-
-  openEdit(c: any) {
-    this.form = {
-      name: c.name, categoryKey: c.categoryKey, description: c.description || '',
-      icon: c.icon || 'book', color: c.color || '#6366f1',
-    };
-    this.editingId.set(c.id);
-    this.showForm.set(true);
-  }
-
   async save() {
     if (!this.form.name?.trim() || !this.form.categoryKey?.trim()) {
       this.toast.error('يرجى إدخال الاسم والمفتاح');
       return;
     }
+    this.saving.set(true);
     try {
       if (this.editingId()) {
         await this.api.updateJournalEntryCategory(this.editingId()!, this.form);
@@ -65,14 +73,15 @@ export class JournalCategoriesComponent extends BasePageComponent {
         await this.api.createJournalEntryCategory(this.bizId, this.form);
         this.toast.success('تم إضافة التصنيف بنجاح');
       }
-      this.showForm.set(false);
+      this.closeForm();
       await this.load();
     } catch (e: unknown) {
       this.toast.error(e instanceof Error ? e.message : 'حدث خطأ');
     }
+    this.saving.set(false);
   }
 
-  async remove(c: any) {
+  async remove(c: JournalCategory) {
     const confirmed = await this.toast.confirm({
       title: 'تأكيد الحذف',
       message: `هل أنت متأكد من حذف التصنيف "${c.name}"؟`,

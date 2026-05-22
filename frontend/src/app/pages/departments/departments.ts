@@ -20,7 +20,6 @@ interface Department {
   icon?: string;
   color?: string;
   isActive?: boolean;
-  [key: string]: unknown;
 }
 
 @Component({

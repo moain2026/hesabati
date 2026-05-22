@@ -102,7 +102,7 @@
 
   <!-- Modal Form -->
   @if (showForm()) {
-    <div class="valex-modal-overlay" (click)="showForm.set(false)">
+    <div class="valex-modal-overlay" (click)="closeForm()">
       <div class="valex-modal" (click)="$event.stopPropagation()">
         <div class="valex-modal-header">
           <div class="flex items-center gap-3">
@@ -114,7 +114,7 @@
               <p class="text-xs text-muted">تخطيط المصروفات (ثابت، متغير، سنوي)</p>
             </div>
           </div>
-          <button class="valex-icon-btn" (click)="showForm.set(false)">
+          <button class="valex-icon-btn" (click)="closeForm()">
             <span class="material-icons-round">close</span>
           </button>
         </div>
@@ -192,7 +192,7 @@
           </div>
         </div>
         <div class="valex-modal-footer">
-          <button class="valex-btn valex-btn-outline" (click)="showForm.set(false)">إلغاء</button>
+          <button class="valex-btn valex-btn-outline" (click)="closeForm()">إلغاء</button>
           <button class="valex-btn valex-btn-primary" (click)="save()">
             <span class="material-icons-round">save</span>
             {{ editingId() ? 'حفظ التعديلات' : 'إضافة البند' }}

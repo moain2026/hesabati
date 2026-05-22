@@ -74,7 +74,7 @@
           <h3 class="valex-card-title">{{ editingId() ? 'تعديل مخزن' : 'إضافة مخزن جديد' }}</h3>
           @if (editingId()) { <span class="valex-badge valex-badge-warning">تعديل</span> }
         </div>
-        <button class="valex-icon-btn" (click)="showForm.set(false)"><span class="material-icons-round">close</span></button>
+        <button class="valex-icon-btn" (click)="closeForm()"><span class="material-icons-round">close</span></button>
       </div>
       <div class="valex-card-body">
         <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
@@ -124,7 +124,7 @@
         </div>
       </div>
       <div class="valex-card-footer flex justify-end gap-3">
-        <button class="valex-btn valex-btn-outline" (click)="showForm.set(false)">إلغاء</button>
+        <button class="valex-btn valex-btn-outline" (click)="closeForm()">إلغاء</button>
         <button class="valex-btn valex-btn-primary" (click)="save()">{{ editingId() ? 'حفظ التعديلات' : 'إضافة المخزن' }}</button>
       </div>
     </div>

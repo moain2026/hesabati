@@ -1,10 +1,29 @@
 import { Component, inject, signal } from '@angular/core';
 import { ApiService } from '../../services/api.service';
 import { ToastService } from '../../services/toast.service';
-import { BasePageComponent } from '../../shared/base-page.component';
+import { BaseCrudPageComponent } from '../../shared/base-crud-page.component';
 import { PAGE_IMPORTS } from '../../shared/page-imports';
 
 interface EmployeeForm { fullName: string; accountId: number | null; departmentId: number | null; jobTitleId: number | null; jobTitle: string; stationId: number | null; department: string; salary: number; salaryCurrency: string; phone: string; status: string; notes: string; }
+
+interface Employee {
+  id: number; fullName: string;
+  accountId?: number | null;
+  departmentId?: number | null;
+  jobTitleId?: number | null;
+  jobTitle?: string;
+  stationId?: number | null;
+  stationName?: string;
+  department?: string;
+  salary?: number | string;
+  salaryCurrency?: string;
+  phone?: string;
+  status: string;
+  notes?: string;
+  code?: string;
+  accountLedgerCode?: string;
+  sequenceNumber?: string | number;
+}
 
 @Component({
   selector: 'app-employees',
@@ -13,28 +32,73 @@ interface EmployeeForm { fullName: string; accountId: number | null; departmentI
   templateUrl: './employees.html',
   styleUrl: './employees.scss',
 })
-export class EmployeesComponent extends BasePageComponent {
+export class EmployeesComponent extends BaseCrudPageComponent<Employee> {
   private readonly api = inject(ApiService);
   private readonly toast = inject(ToastService);
 
-  employees = signal<any[]>([]);
+  employees = signal<Employee[]>([]);
   stations = signal<any[]>([]);
   departments = signal<any[]>([]);
   jobTitles = signal<any[]>([]);
   employeeAccounts = signal<any[]>([]);
-  loading = signal(true);
-  showForm = signal(false);
-  editingId = signal<number | null>(null);
   filterStation = signal<string>('all');
 
   accountCurrencies = signal<any[]>([]);
   selectedCurrencyIds = signal<number[]>([]);
   defaultCurrencyId = signal<number | null>(null);
 
-  form: EmployeeForm = { fullName: '', accountId: null, departmentId: null, jobTitleId: null, jobTitle: '', stationId: null, department: '', salary: 0, salaryCurrency: 'YER', phone: '', status: 'active', notes: '' };
+  private readonly defaultForm: EmployeeForm = { fullName: '', accountId: null, departmentId: null, jobTitleId: null, jobTitle: '', stationId: null, department: '', salary: 0, salaryCurrency: 'YER', phone: '', status: 'active', notes: '' };
+  form: EmployeeForm = { ...this.defaultForm };
 
   protected override onBizIdChange(_bizId: number): void {
     this.load();
+  }
+
+  protected resetForm(): void {
+    this.form = { ...this.defaultForm };
+    this.accountCurrencies.set([]);
+    this.selectedCurrencyIds.set([]);
+    this.defaultCurrencyId.set(null);
+  }
+
+  protected populateForm(emp: Employee & { id: number }): void {
+    this.form = {
+      fullName: emp.fullName,
+      accountId: emp.accountId ?? null,
+      departmentId: emp.departmentId ?? null,
+      jobTitleId: emp.jobTitleId ?? null,
+      jobTitle: emp.jobTitle || '',
+      stationId: emp.stationId ?? null,
+      department: emp.department || '',
+      salary: Number(emp.salary || 0),
+      salaryCurrency: emp.salaryCurrency || 'YER',
+      phone: emp.phone || '',
+      status: emp.status,
+      notes: emp.notes || '',
+    };
+    this.accountCurrencies.set([]);
+    this.selectedCurrencyIds.set([]);
+    this.defaultCurrencyId.set(null);
+    if (emp.accountId) {
+      this.onAccountChange(emp.accountId).then(() => {
+        const matchCurr = this.accountCurrencies().find(
+          (c: any) => c.code === emp.salaryCurrency || c.currencyCode === emp.salaryCurrency
+        );
+        if (matchCurr) this.defaultCurrencyId.set(matchCurr.currencyId);
+      });
+    }
+  }
+
+  override openAdd(): void {
+    const defaultAcc = this.employeeAccounts()[0];
+    this.resetForm();
+    if (defaultAcc?.id) {
+      this.form.accountId = defaultAcc.id;
+      this.onAccountChange(defaultAcc.id);
+    }
+    this.editingId.set(null);
+    this.showForm.set(true);
+    this.scrollToTop();
   }
 
   async load() {
@@ -65,46 +129,8 @@ export class EmployeesComponent extends BasePageComponent {
 
   totalSalaries() { return this.filteredEmployees().reduce((s, e) => s + Number(e.salary || 0), 0); }
 
-  openAdd() {
-    const defaultAcc = this.employeeAccounts()[0];
-    this.form = { fullName: '', accountId: defaultAcc?.id ?? null, departmentId: null, jobTitleId: null, jobTitle: '', stationId: null, department: '', salary: 0, salaryCurrency: 'YER', phone: '', status: 'active', notes: '' };
-    this.accountCurrencies.set([]);
-    this.selectedCurrencyIds.set([]);
-    this.defaultCurrencyId.set(null);
-    if (defaultAcc?.id) this.onAccountChange(defaultAcc.id);
-    this.editingId.set(null); this.showForm.set(true);
-  }
-
-  openEdit(emp: any) {
-    this.form = {
-      fullName: emp.fullName,
-      accountId: emp.accountId ?? null,
-      departmentId: emp.departmentId ?? null,
-      jobTitleId: emp.jobTitleId ?? null,
-      jobTitle: emp.jobTitle || '',
-      stationId: emp.stationId,
-      department: emp.department || '',
-      salary: Number(emp.salary),
-      salaryCurrency: emp.salaryCurrency || 'YER',
-      phone: emp.phone || '',
-      status: emp.status,
-      notes: emp.notes || '',
-    };
-    this.accountCurrencies.set([]);
-    this.selectedCurrencyIds.set([]);
-    this.defaultCurrencyId.set(null);
-    if (emp.accountId) {
-      this.onAccountChange(emp.accountId).then(() => {
-        const matchCurr = this.accountCurrencies().find(
-          (c: any) => c.code === emp.salaryCurrency || c.currencyCode === emp.salaryCurrency
-        );
-        if (matchCurr) this.defaultCurrencyId.set(matchCurr.currencyId);
-      });
-    }
-    this.editingId.set(emp.id); this.showForm.set(true);
-  }
-
   async save() {
+    this.saving.set(true);
     try {
       if (!this.defaultCurrencyId()) {
         this.toast.error('يجب اختيار عملة الراتب');
@@ -122,14 +148,17 @@ export class EmployeesComponent extends BasePageComponent {
         currencyIds: allCurrencyIds,
         defaultCurrencyId: this.defaultCurrencyId(),
       };
+      const wasEditing = this.isEditing();
       if (this.editingId()) await this.api.updateEmployee(this.bizId, this.editingId()!, data);
       else await this.api.createEmployee(this.bizId, data);
-      this.showForm.set(false);
-      this.toast.success(this.editingId() ? 'تم تحديث بيانات الموظف بنجاح' : 'تم إضافة الموظف بنجاح');
+      this.closeForm();
+      this.toast.success(wasEditing ? 'تم تحديث بيانات الموظف بنجاح' : 'تم إضافة الموظف بنجاح');
       await this.load();
     } catch (e: unknown) {
       console.error(e);
       this.toast.error(e instanceof Error ? e.message : 'حدث خطأ أثناء حفظ بيانات الموظف');
+    } finally {
+      this.saving.set(false);
     }
   }
 
@@ -147,8 +176,8 @@ export class EmployeesComponent extends BasePageComponent {
     }
   }
 
-  getStatusLabel(s: string) { return s === 'active' ? 'نشط' : s === 'suspended' ? 'موقوف' : 'غير نشط'; }
-  getStatusClass(s: string) { return s === 'active' ? 'active' : 'inactive'; }
+  getStatusLabel(s: string | undefined): string { if (!s) return ''; return s === 'active' ? 'نشط' : s === 'suspended' ? 'موقوف' : 'غير نشط'; }
+  getStatusClass(s: string | undefined): string { if (!s) return ''; return s === 'active' ? 'active' : 'inactive'; }
 
   getDepartmentName(id: number | null | undefined): string {
     if (!id) return '';

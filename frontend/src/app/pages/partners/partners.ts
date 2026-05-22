@@ -1,10 +1,22 @@
 import { Component, inject, signal } from '@angular/core';
 import { ApiService } from '../../services/api.service';
 import { ToastService } from '../../services/toast.service';
-import { BasePageComponent } from '../../shared/base-page.component';
+import { BaseCrudPageComponent } from '../../shared/base-crud-page.component';
 import { PAGE_IMPORTS } from '../../shared/page-imports';
 
 interface PartnerForm { fullName: string; accountId: number | null; sharePercentage: number; phone: string; role: string; notes: string; }
+interface Partner {
+  id: number; fullName: string; accountId?: number | null; sharePercentage: number | string;
+  phone?: string; role?: string; notes?: string; defaultCurrencyId?: number | null;
+  isActive?: boolean;
+  code?: string;
+  accountCode?: string;
+  accountLedgerCode?: string;
+  accountSequence?: string | number;
+  sequenceNumber?: string | number;
+  partnerCode?: string;
+  partnerSequence?: string | number;
+}
 
 @Component({
   selector: 'app-partners',
@@ -13,26 +25,63 @@ interface PartnerForm { fullName: string; accountId: number | null; sharePercent
   templateUrl: './partners.html',
   styleUrl: './partners.scss',
 })
-export class PartnersComponent extends BasePageComponent {
+export class PartnersComponent extends BaseCrudPageComponent<Partner> {
   private readonly api = inject(ApiService);
   private readonly toast = inject(ToastService);
 
   business = signal<any>(null);
-  partners = signal<any[]>([]);
+  partners = signal<Partner[]>([]);
   partnerAccounts = signal<any[]>([]);
-  loading = signal(true);
-  showForm = signal(false);
-  editingId = signal<number | null>(null);
   showDeleteConfirm = signal(false);
-  deleteTarget = signal<any>(null);
+  deleteTarget = signal<Partner | null>(null);
 
   accountCurrencies = signal<any[]>([]);
   selectedCurrencyIds = signal<number[]>([]);
   defaultCurrencyId = signal<number | null>(null);
-  form: PartnerForm = { fullName: '', accountId: null, sharePercentage: 0, phone: '', role: '', notes: '' };
+
+  private readonly defaultForm: PartnerForm = { fullName: '', accountId: null, sharePercentage: 0, phone: '', role: '', notes: '' };
+  form: PartnerForm = { ...this.defaultForm };
 
   protected override onBizIdChange(_bizId: number): void {
     this.load();
+  }
+
+  protected override resetForm(): void {
+    this.form = { ...this.defaultForm };
+    this.accountCurrencies.set([]);
+    this.selectedCurrencyIds.set([]);
+    this.defaultCurrencyId.set(null);
+  }
+
+  protected override populateForm(p: Partner): void {
+    this.form = {
+      fullName: p.fullName,
+      accountId: p.accountId ?? null,
+      sharePercentage: Number(p.sharePercentage),
+      phone: p.phone || '',
+      role: p.role || '',
+      notes: p.notes || '',
+    };
+    this.accountCurrencies.set([]);
+    this.selectedCurrencyIds.set([]);
+    this.defaultCurrencyId.set(null);
+    if (p.accountId) {
+      this.onAccountChange(p.accountId).then(() => {
+        const allIds = this.accountCurrencies().map((c: any) => c.currencyId);
+        this.selectedCurrencyIds.set(allIds);
+        if (p.defaultCurrencyId) this.defaultCurrencyId.set(p.defaultCurrencyId);
+      });
+    }
+  }
+
+  /** override لاختيار حساب افتراضي بعد فتح نموذج الإضافة */
+  override openAdd(): void {
+    super.openAdd();
+    const defaultAcc = this.partnerAccounts()[0];
+    if (defaultAcc?.id) {
+      this.form.accountId = defaultAcc.id;
+      this.onAccountChange(defaultAcc.id);
+    }
   }
 
   async load() {
@@ -54,38 +103,8 @@ export class PartnersComponent extends BasePageComponent {
     return this.partners().reduce((s, p) => s + Number(p.sharePercentage || 0), 0);
   }
 
-  openAdd() {
-    const defaultAcc = this.partnerAccounts()[0];
-    this.form = { fullName: '', accountId: defaultAcc?.id ?? null, sharePercentage: 0, phone: '', role: '', notes: '' };
-    this.accountCurrencies.set([]);
-    this.selectedCurrencyIds.set([]);
-    this.defaultCurrencyId.set(null);
-    this.editingId.set(null);
-    this.showForm.set(true);
-    if (defaultAcc?.id) this.onAccountChange(defaultAcc.id);
-  }
-
-  openEdit(p: any) {
-    this.form = {
-      fullName: p.fullName, accountId: p.accountId ?? null,
-      sharePercentage: Number(p.sharePercentage),
-      phone: p.phone || '', role: p.role || '', notes: p.notes || '',
-    };
-    this.accountCurrencies.set([]);
-    this.selectedCurrencyIds.set([]);
-    this.defaultCurrencyId.set(null);
-    if (p.accountId) {
-      this.onAccountChange(p.accountId).then(() => {
-        const allIds = this.accountCurrencies().map((c: any) => c.currencyId);
-        this.selectedCurrencyIds.set(allIds);
-        if (p.defaultCurrencyId) this.defaultCurrencyId.set(p.defaultCurrencyId);
-      });
-    }
-    this.editingId.set(p.id);
-    this.showForm.set(true);
-  }
-
   async save() {
+    this.saving.set(true);
     try {
       const data = {
         ...this.form,
@@ -94,18 +113,23 @@ export class PartnersComponent extends BasePageComponent {
         currencyIds: this.selectedCurrencyIds(),
         defaultCurrencyId: this.defaultCurrencyId(),
       };
-      if (this.editingId()) {
-        await this.api.updatePartner(this.editingId()!, data);
+      const wasEditing = this.editingId();
+      if (wasEditing) {
+        await this.api.updatePartner(wasEditing, data);
       } else {
         await this.api.createPartner(this.bizId, data);
       }
-      this.showForm.set(false);
-      this.toast.success(this.editingId() ? 'تم تحديث الشريك بنجاح' : 'تم إضافة الشريك بنجاح');
+      this.closeForm();
+      this.toast.success(wasEditing ? 'تم تحديث الشريك بنجاح' : 'تم إضافة الشريك بنجاح');
       await this.load();
-    } catch (e: unknown) { console.error(e); this.toast.error(e instanceof Error ? e.message : 'حدث خطأ أثناء حفظ الشريك'); }
+    } catch (e: unknown) {
+      console.error(e);
+      this.toast.error(e instanceof Error ? e.message : 'حدث خطأ أثناء حفظ الشريك');
+    }
+    this.saving.set(false);
   }
 
-  confirmDelete(p: any) {
+  confirmDelete(p: Partner) {
     this.deleteTarget.set(p);
     this.showDeleteConfirm.set(true);
   }
@@ -119,7 +143,10 @@ export class PartnersComponent extends BasePageComponent {
       this.deleteTarget.set(null);
       this.toast.success('تم حذف الشريك بنجاح');
       await this.load();
-    } catch (e: unknown) { console.error(e); this.toast.error(e instanceof Error ? e.message : 'حدث خطأ أثناء الحذف'); }
+    } catch (e: unknown) {
+      console.error(e);
+      this.toast.error(e instanceof Error ? e.message : 'حدث خطأ أثناء الحذف');
+    }
   }
 
   getShareColor(pct: number): string {

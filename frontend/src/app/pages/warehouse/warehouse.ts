@@ -1,11 +1,25 @@
 import { Component, inject, signal, computed } from '@angular/core';
 import { ApiService } from '../../services/api.service';
 import { ToastService } from '../../services/toast.service';
-import { BasePageComponent } from '../../shared/base-page.component';
+import { BaseCrudPageComponent } from '../../shared/base-crud-page.component';
 import { PAGE_IMPORTS } from '../../shared/page-imports';
 
 interface WarehouseForm { name: string; accountId: number | null; warehouseType: string; subType: string; stationId: number | null; responsiblePerson: string; location: string; notes: string; }
 interface WarehouseTypeForm { name: string; subTypeKey: string; description: string; icon: string; color: string; }
+interface Warehouse {
+  id: number; name: string;
+  accountId?: number | null;
+  warehouseType: string;
+  subType?: string;
+  stationId?: number | null;
+  responsiblePerson?: string;
+  location?: string;
+  notes?: string;
+  defaultCurrencyId?: number | null;
+  code?: string;
+  accountLedgerCode?: string;
+  sequenceNumber?: string | number;
+}
 
 @Component({
   selector: 'app-warehouse',
@@ -14,28 +28,63 @@ interface WarehouseTypeForm { name: string; subTypeKey: string; description: str
   templateUrl: './warehouse.html',
   styleUrl: './warehouse.scss',
 })
-export class WarehouseComponent extends BasePageComponent {
+export class WarehouseComponent extends BaseCrudPageComponent<Warehouse> {
   private readonly api = inject(ApiService);
   private readonly toast = inject(ToastService);
 
-  warehouses = signal<any[]>([]);
+  warehouses = signal<Warehouse[]>([]);
   stations = signal<any[]>([]);
   warehouseTypes = signal<any[]>([]);
   warehouseAccounts = signal<any[]>([]);
   accountCurrencies = signal<any[]>([]);
   selectedCurrencyIds = signal<number[]>([]);
   defaultCurrencyId = signal<number | null>(null);
-  loading = signal(true);
-  showForm = signal(false);
-  editingId = signal<number | null>(null);
   filterType = signal<string>('all');
   filterSubType = signal<string>('all');
 
   // نموذج إضافة/تعديل مخزن
-  form: WarehouseForm = {
+  private readonly defaultForm: WarehouseForm = {
     name: '', accountId: null, warehouseType: 'main', subType: '',
     stationId: null, responsiblePerson: '', location: '', notes: '',
   };
+  form: WarehouseForm = { ...this.defaultForm };
+
+  protected resetForm(): void {
+    this.form = { ...this.defaultForm };
+    this.accountCurrencies.set([]);
+    this.selectedCurrencyIds.set([]);
+    this.defaultCurrencyId.set(null);
+  }
+
+  protected populateForm(w: Warehouse & { id: number }): void {
+    this.form = {
+      name: w.name, accountId: w.accountId ?? null, warehouseType: w.warehouseType, subType: w.subType || '',
+      stationId: w.stationId ?? null, responsiblePerson: w.responsiblePerson || '',
+      location: w.location || '', notes: w.notes || '',
+    };
+    this.accountCurrencies.set([]);
+    this.selectedCurrencyIds.set([]);
+    this.defaultCurrencyId.set(null);
+    if (w.accountId) {
+      this.onAccountChange(w.accountId).then(() => {
+        const allIds = this.accountCurrencies().map((c: any) => c.currencyId);
+        this.selectedCurrencyIds.set(allIds);
+        if (w.defaultCurrencyId) this.defaultCurrencyId.set(w.defaultCurrencyId);
+      });
+    }
+  }
+
+  override openAdd(): void {
+    const defaultAcc = this.warehouseAccounts()[0];
+    this.resetForm();
+    if (defaultAcc?.id) {
+      this.form.accountId = defaultAcc.id;
+      this.onAccountChange(defaultAcc.id);
+    }
+    this.editingId.set(null);
+    this.showForm.set(true);
+    this.scrollToTop();
+  }
 
   // إدارة تصنيفات المخازن
   showTypeForm = signal(false);
@@ -84,7 +133,7 @@ export class WarehouseComponent extends BasePageComponent {
   subTypeFilters = computed(() => {
     const whs = this.warehouses();
     const types = this.warehouseTypes();
-    const subTypes = [...new Set(whs.map(w => w.subType).filter(Boolean))];
+    const subTypes = [...new Set(whs.map(w => w.subType).filter((s): s is string => !!s))];
     return subTypes.map(st => {
       const typeInfo = types.find((t: any) => t.subTypeKey === st);
       return {
@@ -97,58 +146,25 @@ export class WarehouseComponent extends BasePageComponent {
     });
   });
 
-  getStationName(stationId: number | null): string {
+  getStationName(stationId: number | null | undefined): string {
     if (!stationId) return '-';
     const st = this.stations().find(s => s.id === stationId);
     return st ? st.name : '-';
   }
 
-  getSubTypeName(subType: string | null): string {
+  getSubTypeName(subType: string | null | undefined): string {
     if (!subType) return '';
     const t = this.warehouseTypes().find((wt: any) => wt.subTypeKey === subType);
     return t ? t.name : subType;
   }
 
   // ===== إضافة/تعديل مخزن =====
-  openAdd() {
-    const defaultAcc = this.warehouseAccounts()[0];
-    this.form = {
-      name: '', accountId: defaultAcc?.id ?? null, warehouseType: 'main', subType: '',
-      stationId: null, responsiblePerson: '', location: '', notes: '',
-    };
-    this.accountCurrencies.set([]);
-    this.selectedCurrencyIds.set([]);
-    this.defaultCurrencyId.set(null);
-    this.editingId.set(null);
-    this.showForm.set(true);
-    if (defaultAcc?.id) this.onAccountChange(defaultAcc.id);
-  }
-
-  openEdit(w: any) {
-    this.form = {
-      name: w.name, accountId: w.accountId ?? null, warehouseType: w.warehouseType, subType: w.subType || '',
-      stationId: w.stationId, responsiblePerson: w.responsiblePerson || '',
-      location: w.location || '', notes: w.notes || '',
-    };
-    this.accountCurrencies.set([]);
-    this.selectedCurrencyIds.set([]);
-    this.defaultCurrencyId.set(null);
-    if (w.accountId) {
-      this.onAccountChange(w.accountId).then(() => {
-        const allIds = this.accountCurrencies().map((c: any) => c.currencyId);
-        this.selectedCurrencyIds.set(allIds);
-        if (w.defaultCurrencyId) this.defaultCurrencyId.set(w.defaultCurrencyId);
-      });
-    }
-    this.editingId.set(w.id);
-    this.showForm.set(true);
-  }
-
   async save() {
     if (!this.form.name?.trim()) {
       this.toast.error('يرجى إدخال اسم المخزن');
       return;
     }
+    this.saving.set(true);
     try {
       const payload = {
         ...this.form,
@@ -162,10 +178,12 @@ export class WarehouseComponent extends BasePageComponent {
         await this.api.createWarehouse(this.bizId, payload);
         this.toast.success('تم إضافة المخزن بنجاح');
       }
-      this.showForm.set(false);
+      this.closeForm();
       await this.load();
     } catch (e: unknown) {
       this.toast.error(e instanceof Error ? e.message : 'حدث خطأ');
+    } finally {
+      this.saving.set(false);
     }
   }
 
@@ -240,22 +258,26 @@ export class WarehouseComponent extends BasePageComponent {
   }
 
   // ===== مساعدات =====
-  getTypeLabel(t: string): string {
+  getTypeLabel(t: string | undefined): string {
+    if (!t) return '';
     const map: Record<string, string> = { main: 'رئيسي', station: 'محطة', sub: 'فرعي' };
     return map[t] || t;
   }
 
-  getTypeClass(t: string): string {
+  getTypeClass(t: string | undefined): string {
+    if (!t) return 'default';
     const map: Record<string, string> = { main: 'active', station: 'partner', sub: 'info' };
     return map[t] || 'default';
   }
 
-  getTypeIcon(t: string): string {
+  getTypeIcon(t: string | undefined): string {
+    if (!t) return 'warehouse';
     const map: Record<string, string> = { main: 'store', station: 'local_gas_station', sub: 'inventory_2' };
     return map[t] || 'warehouse';
   }
 
-  getTypeColor(t: string): string {
+  getTypeColor(t: string | undefined): string {
+    if (!t) return '#64748b';
     const map: Record<string, string> = { main: '#f59e0b', station: '#3b82f6', sub: '#8b5cf6' };
     return map[t] || '#64748b';
   }

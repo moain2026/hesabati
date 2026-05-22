@@ -5,7 +5,7 @@ import { BaseCrudPageComponent } from '../../shared/base-crud-page.component';
 import { PAGE_IMPORTS } from '../../shared/page-imports';
 
 interface JobTitleForm { name: string; description: string; icon: string; color: string; }
-interface JobTitle { id: number; name: string; description?: string; icon?: string; color?: string; isActive?: boolean; [key: string]: unknown; }
+interface JobTitle { id: number; name: string; description?: string; icon?: string; color?: string; isActive?: boolean; }
 
 @Component({
   selector: 'app-job-titles',

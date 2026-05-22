@@ -5,7 +5,14 @@ import { BaseCrudPageComponent } from '../../shared/base-crud-page.component';
 import { PAGE_IMPORTS } from '../../shared/page-imports';
 
 interface SupplierTypeForm { name: string; subTypeKey: string; description: string; icon: string; color: string; }
-interface SupplierType { id: number; name: string; subTypeKey: string; description?: string; icon?: string; color?: string; isActive?: boolean; [key: string]: unknown; }
+interface SupplierType {
+  id: number; name: string; subTypeKey: string;
+  description?: string; icon?: string; color?: string;
+  isActive?: boolean; isSystem?: boolean;
+  code?: string; accountCode?: string;
+  accountLedgerCode?: string; accountSequence?: string | number;
+  sequenceNumber?: string | number;
+}
 
 @Component({
   selector: 'app-supplier-types',

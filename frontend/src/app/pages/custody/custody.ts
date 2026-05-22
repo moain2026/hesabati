@@ -1,7 +1,7 @@
 import { Component, inject, signal, computed } from '@angular/core';
 import { ApiService } from '../../services/api.service';
 import { ToastService } from '../../services/toast.service';
-import { BasePageComponent } from '../../shared/base-page.component';
+import { BaseCrudPageComponent } from '../../shared/base-crud-page.component';
 import { PAGE_IMPORTS } from '../../shared/page-imports';
 
 interface CustodyForm {
@@ -20,6 +20,28 @@ interface SettleForm {
   notes: string;
   settledAt: string;
 }
+interface CustodyRecord {
+  id: number;
+  custodyType: string;
+  custodyNumber?: string;
+  contentType?: string;
+  partyName: string;
+  partyType?: string;
+  employeeId?: number | null;
+  description?: string;
+  amount?: number;
+  accountId?: number | null;
+  currencyId?: number | null;
+  status?: string;
+  isActive?: boolean;
+  code?: string;
+  createdAt?: string;
+  updatedAt?: string;
+  settledAt?: string;
+  settledAmount?: number;
+  remainingAmount?: number;
+  notes?: string;
+}
 
 @Component({
   selector: 'app-custody',
@@ -28,17 +50,15 @@ interface SettleForm {
   templateUrl: './custody.html',
   styleUrl: './custody.scss',
 })
-export class CustodyComponent extends BasePageComponent {
+export class CustodyComponent extends BaseCrudPageComponent<CustodyRecord> {
   private readonly api = inject(ApiService);
   private readonly toast = inject(ToastService);
 
-  records = signal<any[]>([]);
+  records = signal<CustodyRecord[]>([]);
   custodyAccounts = signal<any[]>([]);
-  loading = signal(true);
-  showForm = signal(false);
-  editingId = signal<number | null>(null);
   activeTab = signal<'permanent' | 'temporary'>('permanent');
-  viewingRecord = signal<any | null>(null);
+  // لتجنب أخطاء null في القوالب عند عرض تفاصيل العهدة
+  viewingRecord = signal<any>(null);
   settlements = signal<any[]>([]);
   showSettleForm = signal(false);
 
@@ -46,7 +66,7 @@ export class CustodyComponent extends BasePageComponent {
   accountCurrencies = signal<any[]>([]);
   selectedCurrencyId = signal<number | null>(null);
 
-  form: CustodyForm = {
+  private readonly defaultForm: CustodyForm = {
     custodyType: 'permanent',
     contentType: 'cash',
     partyName: '',
@@ -57,6 +77,7 @@ export class CustodyComponent extends BasePageComponent {
     accountId: null,
     currencyId: null,
   };
+  form: CustodyForm = { ...this.defaultForm };
 
   settleForm: SettleForm = { amount: 0, notes: '', settledAt: '' };
 
@@ -74,6 +95,33 @@ export class CustodyComponent extends BasePageComponent {
 
   protected override onBizIdChange(_bizId: number): void {
     this.load();
+  }
+
+  protected override resetForm(): void {
+    this.form = { ...this.defaultForm, custodyType: this.activeTab() };
+    this.accountCurrencies.set([]);
+    this.selectedCurrencyId.set(null);
+  }
+
+  protected override populateForm(c: CustodyRecord): void {
+    this.form = {
+      custodyType: c.custodyType || 'permanent',
+      contentType: c.contentType || 'cash',
+      partyName: c.partyName || '',
+      partyType: c.partyType || 'employee',
+      employeeId: c.employeeId ?? null,
+      description: c.description || '',
+      amount: c.amount || 0,
+      accountId: c.accountId ?? null,
+      currencyId: c.currencyId ?? null,
+    };
+    this.accountCurrencies.set([]);
+    this.selectedCurrencyId.set(null);
+    if (c.accountId) {
+      this.onAccountChange(c.accountId).then(() => {
+        if (c.currencyId) this.selectedCurrencyId.set(c.currencyId);
+      });
+    }
   }
 
   filteredRecords = computed(() =>
@@ -103,66 +151,28 @@ export class CustodyComponent extends BasePageComponent {
     this.loading.set(false);
   }
 
-  openAdd() {
-    this.form = {
-      custodyType: this.activeTab(),
-      contentType: 'cash',
-      partyName: '',
-      partyType: 'employee',
-      employeeId: null,
-      description: '',
-      amount: 0,
-      accountId: null,
-      currencyId: null,
-    };
-    this.accountCurrencies.set([]);
-    this.selectedCurrencyId.set(null);
-    this.editingId.set(null);
-    this.showForm.set(true);
-  }
-
-  openEdit(c: any) {
-    this.form = {
-      custodyType: c.custodyType || 'permanent',
-      contentType: c.contentType || 'cash',
-      partyName: c.partyName || '',
-      partyType: c.partyType || 'employee',
-      employeeId: c.employeeId,
-      description: c.description || '',
-      amount: c.amount || 0,
-      accountId: c.accountId ?? null,
-      currencyId: c.currencyId ?? null,
-    };
-    this.accountCurrencies.set([]);
-    this.selectedCurrencyId.set(null);
-    if (c.accountId) {
-      this.onAccountChange(c.accountId).then(() => {
-        if (c.currencyId) this.selectedCurrencyId.set(c.currencyId);
-      });
-    }
-    this.editingId.set(c.id);
-    this.showForm.set(true);
-  }
-
   async save() {
     if (!this.form.partyName?.trim()) {
       this.toast.error('يرجى إدخال اسم الطرف');
       return;
     }
+    this.saving.set(true);
     const data = { ...this.form, currencyId: this.selectedCurrencyId() };
     try {
-      if (this.editingId()) {
-        await this.api.updateCustodyRecord(this.bizId, this.editingId()!, data);
+      const wasEditing = this.editingId();
+      if (wasEditing) {
+        await this.api.updateCustodyRecord(this.bizId, wasEditing, data);
         this.toast.success('تم تعديل سجل العهدة بنجاح');
       } else {
         await this.api.createCustodyRecord(this.bizId, data);
         this.toast.success('تم إنشاء سجل العهدة بنجاح');
       }
-      this.showForm.set(false);
+      this.closeForm();
       await this.load();
     } catch (e: unknown) {
       this.toast.error(e instanceof Error ? e.message : 'حدث خطأ');
     }
+    this.saving.set(false);
   }
 
   async onAccountChange(accountId: number) {
@@ -185,7 +195,7 @@ export class CustodyComponent extends BasePageComponent {
     this.selectedCurrencyId.set(currencyId);
   }
 
-  async remove(c: any) {
+  async remove(c: CustodyRecord) {
     const confirmed = await this.toast.confirm({
       title: 'تأكيد الحذف',
       message: `هل أنت متأكد من حذف عهدة "${c.partyName}"؟`,
@@ -222,18 +232,21 @@ export class CustodyComponent extends BasePageComponent {
       this.toast.error('يرجى إدخال مبلغ التسوية');
       return;
     }
+    const target = this.viewingRecord();
+    if (!target?.id) return;
     try {
-      await this.api.addCustodySettlement(this.bizId, this.viewingRecord().id, this.settleForm);
+      await this.api.addCustodySettlement(this.bizId, target.id, this.settleForm);
       this.toast.success('تم إضافة التسوية بنجاح');
       this.showSettleForm.set(false);
-      await this.viewDetails(this.viewingRecord());
+      await this.viewDetails(target);
       await this.load();
     } catch (e: unknown) {
       this.toast.error(e instanceof Error ? e.message : 'حدث خطأ');
     }
   }
 
-  getStatusLabel(status: string): string {
+  getStatusLabel(status: string | undefined): string {
+    if (!status) return '';
     const map: Record<string, string> = {
       active: 'نشطة',
       partially_settled: 'مسوّاة جزئياً',
@@ -243,7 +256,8 @@ export class CustodyComponent extends BasePageComponent {
     return map[status] || status;
   }
 
-  getStatusClass(status: string): string {
+  getStatusClass(status: string | undefined): string {
+    if (!status) return '';
     const map: Record<string, string> = {
       active: 'st-active',
       partially_settled: 'st-partial',
@@ -253,11 +267,13 @@ export class CustodyComponent extends BasePageComponent {
     return map[status] || '';
   }
 
-  getPartyTypeLabel(type: string): string {
+  getPartyTypeLabel(type: string | undefined): string {
+    if (!type) return '';
     return this.partyTypes.find((t) => t.key === type)?.label || type;
   }
 
-  getContentTypeLabel(type: string): string {
+  getContentTypeLabel(type: string | undefined): string {
+    if (!type) return '';
     return this.contentTypes.find((t) => t.key === type)?.label || type;
   }
 }

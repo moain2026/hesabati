@@ -1,10 +1,22 @@
 import { Component, inject, signal } from '@angular/core';
 import { ApiService } from '../../services/api.service';
 import { ToastService } from '../../services/toast.service';
-import { BasePageComponent } from '../../shared/base-page.component';
+import { BaseCrudPageComponent } from '../../shared/base-crud-page.component';
 import { PAGE_IMPORTS } from '../../shared/page-imports';
 
 interface BudgetForm { name: string; stationId: number | null; amount: number; currencyId: number; expenseType: string; month: number | null; year: number | null; notes: string; accountId: number | null; }
+
+interface ExpenseBudgetItem {
+  id: number; name: string;
+  stationId?: number | null;
+  amount?: number | string;
+  currencyId?: number;
+  expenseType?: string;
+  month?: number | null;
+  year?: number | null;
+  notes?: string;
+  accountId?: number | null;
+}
 
 @Component({
   selector: 'app-expense-budget',
@@ -13,16 +25,13 @@ interface BudgetForm { name: string; stationId: number | null; amount: number; c
   templateUrl: './expense-budget.html',
   styleUrl: './expense-budget.scss',
 })
-export class ExpenseBudgetComponent extends BasePageComponent {
+export class ExpenseBudgetComponent extends BaseCrudPageComponent<ExpenseBudgetItem> {
   private readonly api = inject(ApiService);
   private readonly toast = inject(ToastService);
 
-  items = signal<any[]>([]);
+  items = signal<ExpenseBudgetItem[]>([]);
   currencies = signal<any[]>([]);
   stations = signal<any[]>([]);
-  loading = signal(true);
-  showForm = signal(false);
-  editingId = signal<number | null>(null);
 
   filterMonth = signal<number | null>(null);
   filterYear = signal<number | null>(null);
@@ -31,7 +40,9 @@ export class ExpenseBudgetComponent extends BasePageComponent {
   budgetAccounts = signal<any[]>([]);
   accountCurrencies = signal<any[]>([]);
   selectedCurrencyId = signal<number | null>(null);
-  form: BudgetForm = { name: '', stationId: null, amount: 0, currencyId: 1, expenseType: 'variable', month: null, year: null, notes: '', accountId: null };
+
+  private readonly defaultForm: BudgetForm = { name: '', stationId: null, amount: 0, currencyId: 1, expenseType: 'variable', month: null, year: null, notes: '', accountId: null };
+  form: BudgetForm = { ...this.defaultForm };
 
   override ngOnInit(): void {
     super.ngOnInit();
@@ -44,6 +55,37 @@ export class ExpenseBudgetComponent extends BasePageComponent {
     this.api.getCurrencies().then(c => this.currencies.set(c || []));
     this.api.getStations(this.bizId).then(s => this.stations.set(s || []));
     this.api.getAccounts(this.bizId).then(a => this.budgetAccounts.set((a || []).filter((acc: any) => acc.accountType === 'budget')));
+  }
+
+  protected resetForm(): void {
+    this.form = {
+      ...this.defaultForm,
+      month: this.filterMonth() || null,
+      year: this.filterYear() || new Date().getFullYear(),
+    };
+    this.accountCurrencies.set([]);
+    this.selectedCurrencyId.set(null);
+  }
+
+  protected populateForm(item: ExpenseBudgetItem & { id: number }): void {
+    this.form = {
+      name: item.name,
+      stationId: item.stationId || null,
+      amount: Number(item.amount || 0),
+      currencyId: item.currencyId || 1,
+      expenseType: item.expenseType || 'variable',
+      month: item.month ?? null,
+      year: item.year ?? null,
+      notes: item.notes || '',
+      accountId: item.accountId ?? null,
+    };
+    this.accountCurrencies.set([]);
+    this.selectedCurrencyId.set(null);
+    if (item.accountId) {
+      this.onAccountChange(item.accountId).then(() => {
+        if (item.currencyId) this.selectedCurrencyId.set(item.currencyId);
+      });
+    }
   }
 
   async load() {
@@ -59,33 +101,9 @@ export class ExpenseBudgetComponent extends BasePageComponent {
 
   onFilterChange() { this.load(); }
 
-  openAdd() {
-    this.form = { name: '', stationId: null, amount: 0, currencyId: 1, expenseType: 'variable', month: this.filterMonth() || null, year: this.filterYear() || new Date().getFullYear(), notes: '', accountId: null };
-    this.accountCurrencies.set([]);
-    this.selectedCurrencyId.set(null);
-    this.editingId.set(null);
-    this.showForm.set(true);
-  }
-
-  openEdit(item: any) {
-    this.form = {
-      name: item.name, stationId: item.stationId || null, amount: Number(item.amount || 0), currencyId: item.currencyId || 1,
-      expenseType: item.expenseType || 'variable', month: item.month ?? null, year: item.year ?? null, notes: item.notes || '',
-      accountId: item.accountId ?? null,
-    };
-    this.accountCurrencies.set([]);
-    this.selectedCurrencyId.set(null);
-    if (item.accountId) {
-      this.onAccountChange(item.accountId).then(() => {
-        if (item.currencyId) this.selectedCurrencyId.set(item.currencyId);
-      });
-    }
-    this.editingId.set(item.id);
-    this.showForm.set(true);
-  }
-
   async save() {
     if (!this.form.name?.trim()) { this.toast.warning('يرجى إدخال اسم البند'); return; }
+    this.saving.set(true);
     try {
       const currId = this.selectedCurrencyId() || this.form.currencyId;
       const payload = { ...this.form, amount: Number(this.form.amount), currencyId: currId };
@@ -97,12 +115,13 @@ export class ExpenseBudgetComponent extends BasePageComponent {
         await this.api.updateExpenseBudget(id, payload);
         this.toast.success('تم تعديل البند بنجاح');
       }
-      this.showForm.set(false);
+      this.closeForm();
       await this.load();
     } catch (e: unknown) { this.toast.error(e instanceof Error ? e.message : 'حدث خطأ'); }
+    finally { this.saving.set(false); }
   }
 
-  async remove(item: any) {
+  async remove(item: ExpenseBudgetItem) {
     const confirmed = await this.toast.confirm({ title: 'تأكيد الحذف', message: `هل أنت متأكد من حذف "${item.name}"؟`, type: 'danger' });
     if (confirmed) {
       try {
@@ -113,15 +132,17 @@ export class ExpenseBudgetComponent extends BasePageComponent {
     }
   }
 
-  getExpenseTypeLabel(t: string): string {
+  getExpenseTypeLabel(t: string | undefined): string {
+    if (!t) return '';
     const map: Record<string, string> = { fixed: 'ثابت', variable: 'متغير', annual: 'سنوي' };
     return map[t] || t;
   }
-  getStationName(id: number | null): string {
+  getStationName(id: number | null | undefined): string {
     if (!id) return '-';
     return this.stations().find(s => s.id === id)?.name || '-';
   }
-  getCurrencyCode(id: number): string {
+  getCurrencyCode(id: number | undefined): string {
+    if (!id) return 'ر.ي';
     return this.currencies().find(c => c.id === id)?.code || 'ر.ي';
   }
   totalAmount(): number { return this.items().reduce((s, i) => s + Number(i.amount || 0), 0); }

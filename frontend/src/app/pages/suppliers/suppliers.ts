@@ -1,10 +1,21 @@
 import { Component, inject, signal } from '@angular/core';
 import { ApiService } from '../../services/api.service';
 import { ToastService } from '../../services/toast.service';
-import { BasePageComponent } from '../../shared/base-page.component';
+import { BaseCrudPageComponent } from '../../shared/base-crud-page.component';
 import { PAGE_IMPORTS } from '../../shared/page-imports';
 
 interface SupplierForm { name: string; supplierTypeId: number | null; category: string; phone: string; address: string; contactPerson: string; notes: string; }
+interface Supplier {
+  id: number; name: string; supplierTypeId?: number | null; category?: string;
+  phone?: string; address?: string; contactPerson?: string; notes?: string;
+  defaultCurrencyId?: number | null;
+  isActive?: boolean;
+  code?: string;
+  accountCode?: string;
+  accountLedgerCode?: string;
+  accountSequence?: string | number;
+  sequenceNumber?: string | number;
+}
 
 @Component({
   selector: 'app-suppliers',
@@ -13,25 +24,52 @@ interface SupplierForm { name: string; supplierTypeId: number | null; category: 
   templateUrl: './suppliers.html',
   styleUrl: './suppliers.scss',
 })
-export class SuppliersComponent extends BasePageComponent {
+export class SuppliersComponent extends BaseCrudPageComponent<Supplier> {
   private readonly api = inject(ApiService);
   private readonly toast = inject(ToastService);
 
-  suppliers = signal<any[]>([]);
+  suppliers = signal<Supplier[]>([]);
   supplierTypes = signal<any[]>([]);
   accountCurrencies = signal<any[]>([]);
   selectedCurrencyIds = signal<number[]>([]);
   defaultCurrencyId = signal<number | null>(null);
-  loading = signal(true);
-  showForm = signal(false);
-  editingId = signal<number | null>(null);
   filterCategory = signal<string>('all');
   searchQuery = signal<string>('');
 
-  form: SupplierForm = { name: '', supplierTypeId: null, category: '', phone: '', address: '', contactPerson: '', notes: '' };
+  private readonly defaultForm: SupplierForm = { name: '', supplierTypeId: null, category: '', phone: '', address: '', contactPerson: '', notes: '' };
+  form: SupplierForm = { ...this.defaultForm };
 
   protected override onBizIdChange(_bizId: number): void {
     this.load();
+  }
+
+  protected override resetForm(): void {
+    this.form = { ...this.defaultForm };
+    this.accountCurrencies.set([]);
+    this.selectedCurrencyIds.set([]);
+    this.defaultCurrencyId.set(null);
+  }
+
+  protected override populateForm(s: Supplier): void {
+    this.form = {
+      name: s.name,
+      supplierTypeId: s.supplierTypeId ?? null,
+      category: s.category || '',
+      phone: s.phone || '',
+      address: s.address || '',
+      contactPerson: s.contactPerson || '',
+      notes: s.notes || '',
+    };
+    this.accountCurrencies.set([]);
+    this.selectedCurrencyIds.set([]);
+    this.defaultCurrencyId.set(null);
+    if (s.supplierTypeId) {
+      this.onTypeChange(s.supplierTypeId).then(() => {
+        const allIds = this.accountCurrencies().map((c: any) => c.currencyId);
+        this.selectedCurrencyIds.set(allIds);
+        if (s.defaultCurrencyId) this.defaultCurrencyId.set(s.defaultCurrencyId);
+      });
+    }
   }
 
   async load() {
@@ -50,12 +88,12 @@ export class SuppliersComponent extends BasePageComponent {
     this.loading.set(false);
   }
 
-  categories() {
-    const cats = new Set(
-      this.suppliers()
-        .map(s => this.getSupplierTypeName(s.supplierTypeId) || s.category)
-        .filter(Boolean),
-    );
+  categories(): string[] {
+    const cats = new Set<string>();
+    for (const s of this.suppliers()) {
+      const name = this.getSupplierTypeName(s.supplierTypeId) || s.category;
+      if (name) cats.add(name);
+    }
     return Array.from(cats);
   }
 
@@ -72,35 +110,8 @@ export class SuppliersComponent extends BasePageComponent {
     return list;
   }
 
-  openAdd() {
-    this.form = { name: '', supplierTypeId: null, category: '', phone: '', address: '', contactPerson: '', notes: '' };
-    this.accountCurrencies.set([]);
-    this.selectedCurrencyIds.set([]);
-    this.defaultCurrencyId.set(null);
-    this.editingId.set(null);
-    this.showForm.set(true);
-  }
-
-  openEdit(s: any) {
-    this.form = {
-      name: s.name, supplierTypeId: s.supplierTypeId ?? null, category: s.category || '', phone: s.phone || '',
-      address: s.address || '', contactPerson: s.contactPerson || '', notes: s.notes || '',
-    };
-    this.accountCurrencies.set([]);
-    this.selectedCurrencyIds.set([]);
-    this.defaultCurrencyId.set(null);
-    if (s.supplierTypeId) {
-      this.onTypeChange(s.supplierTypeId).then(() => {
-        const allIds = this.accountCurrencies().map((c: any) => c.currencyId);
-        this.selectedCurrencyIds.set(allIds);
-        if (s.defaultCurrencyId) this.defaultCurrencyId.set(s.defaultCurrencyId);
-      });
-    }
-    this.editingId.set(s.id);
-    this.showForm.set(true);
-  }
-
   async save() {
+    this.saving.set(true);
     try {
       const payload = {
         ...this.form,
@@ -108,21 +119,23 @@ export class SuppliersComponent extends BasePageComponent {
         currencyIds: this.selectedCurrencyIds(),
         defaultCurrencyId: this.defaultCurrencyId(),
       };
-      if (this.editingId()) {
-        await this.api.updateSupplier(this.editingId()!, payload);
+      const wasEditing = this.editingId();
+      if (wasEditing) {
+        await this.api.updateSupplier(wasEditing, payload);
       } else {
         await this.api.createSupplier(this.bizId, payload);
       }
-      this.showForm.set(false);
-      this.toast.success(this.editingId() ? 'تم تحديث المورد بنجاح' : 'تم إضافة المورد بنجاح');
+      this.closeForm();
+      this.toast.success(wasEditing ? 'تم تحديث المورد بنجاح' : 'تم إضافة المورد بنجاح');
       await this.load();
     } catch (e: unknown) {
       console.error(e);
       this.toast.error(e instanceof Error ? e.message : 'حدث خطأ أثناء حفظ المورد');
     }
+    this.saving.set(false);
   }
 
-  async remove(s: any) {
+  async remove(s: Supplier) {
     const confirmed = await this.toast.confirm({ title: 'تأكيد الحذف', message: `هل أنت متأكد من حذف المورد "${s.name}"؟`, type: 'danger' });
     if (confirmed) {
       try {
@@ -136,7 +149,8 @@ export class SuppliersComponent extends BasePageComponent {
     }
   }
 
-  getCategoryIcon(cat: string): string {
+  getCategoryIcon(cat: string | undefined): string {
+    if (!cat) return 'inventory_2';
     const map: Record<string, string> = { 'وقود': 'local_gas_station', 'زيوت': 'oil_barrel', 'قطع غيار': 'build', 'مواد غذائية': 'restaurant' };
     return map[cat] || 'inventory_2';
   }

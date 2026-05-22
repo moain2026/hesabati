@@ -1,7 +1,7 @@
 import { Component, inject, signal, computed } from '@angular/core';
 import { ApiService } from '../../services/api.service';
 import { ToastService } from '../../services/toast.service';
-import { BasePageComponent } from '../../shared/base-page.component';
+import { BaseCrudPageComponent } from '../../shared/base-crud-page.component';
 import { PAGE_IMPORTS } from '../../shared/page-imports';
 
 interface PurchaseInvoiceItem {
@@ -47,7 +47,7 @@ interface PurchaseInvoice {
   templateUrl: './purchase-invoices.html',
   styleUrl: './purchase-invoices.scss',
 })
-export class PurchaseInvoicesComponent extends BasePageComponent {
+export class PurchaseInvoicesComponent extends BaseCrudPageComponent<PurchaseInvoice> {
   private readonly api = inject(ApiService);
   private readonly toast = inject(ToastService);
 
@@ -57,11 +57,7 @@ export class PurchaseInvoicesComponent extends BasePageComponent {
   warehouses     = signal<any[]>([]);
   currencies     = signal<any[]>([]);
   inventoryItems = signal<any[]>([]);
-  loading        = signal(true);
-  saving         = signal(false);
-  showForm       = signal(false);
   expandedId     = signal<number | null>(null);
-  editingId      = signal<number | null>(null);
   error          = signal('');
 
   // ===== Tab Filter =====
@@ -157,19 +153,22 @@ export class PurchaseInvoicesComponent extends BasePageComponent {
   }
 
   // ===== Form Open/Close =====
-  openNew() {
-    this.editingId.set(null);
+  protected resetForm(): void {
     this.formHeader.set({
       supplierId: null, warehouseId: null, currencyId: 1, paymentMethod: 'credit',
       invoiceDate: new Date().toISOString().split('T')[0], dueDate: '', externalReference: '', notes: '',
     });
     this.formItems.set([]);
     this.error.set('');
-    this.showForm.set(true);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
-  async openEdit(inv: PurchaseInvoice) {
+  protected populateForm(_inv: PurchaseInvoice & { id: number }): void {
+    // populated asynchronously in openEdit override
+  }
+
+  openNew() { this.openAdd(); }
+
+  override async openEdit(inv: PurchaseInvoice & { id: number }) {
     try {
       const d = await this.api.getPurchaseInvoice(this.bizId, inv.id);
       this.formHeader.set({
@@ -195,7 +194,7 @@ export class PurchaseInvoicesComponent extends BasePageComponent {
       this.editingId.set(inv.id);
       this.error.set('');
       this.showForm.set(true);
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      this.scrollToTop();
     } catch (e: unknown) {
       this.toast.error('فشل في تحميل تفاصيل الفاتورة');
     }
@@ -247,7 +246,7 @@ export class PurchaseInvoicesComponent extends BasePageComponent {
         await this.api.createPurchaseInvoice(this.bizId, payload);
         this.toast.success('تم إنشاء الفاتورة');
       }
-      this.showForm.set(false);
+      this.closeForm();
       await this.loadAll();
     } catch (e: unknown) {
       this.error.set(e instanceof Error ? e.message : 'حدث خطأ أثناء حفظ الفاتورة');
@@ -287,16 +286,18 @@ export class PurchaseInvoicesComponent extends BasePageComponent {
   }
 
   // ===== Helpers =====
-  getSupplierName(id: number | null): string {
+  getSupplierName(id: number | null | undefined): string {
     if (!id) return '—';
     return this.suppliers().find((s: any) => s.id === id)?.name || '—';
   }
 
-  getStatusInfo(status: string) {
+  getStatusInfo(status: string | undefined) {
+    if (!status) return this.statusMeta['draft'];
     return this.statusMeta[status] || this.statusMeta['draft'];
   }
 
-  getPaymentLabel(method: string): string {
+  getPaymentLabel(method: string | undefined): string {
+    if (!method) return '';
     return this.paymentOptions.find(p => p.key === method)?.label || method;
   }
 
