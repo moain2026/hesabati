@@ -206,6 +206,8 @@ html {
   direction: rtl;
   font-family: t.$font-family-primary;
   scroll-behavior: smooth;
+  height: 100%;           // ⚠️ ضروري لـ 100vh chain
+  overflow: hidden;       // ⚠️ scroll يحدث داخل .valex-content فقط
 }
 
 /* ===== Force Latin/Western Numerals Everywhere ===== */
@@ -222,8 +224,8 @@ input[type=number], input[type=text], input[type=date],
 body {
   background: var(--bg-base, #0f172a);
   color: var(--text-primary, #f1f5f9);
-  min-height: 100vh;
-  overflow-x: hidden;
+  height: 100%;          // ⚠️ height ثابت بدل min-height (يمنع نمو body مع المحتوى)
+  overflow: hidden;       // ⚠️ scroll يحدث داخل .valex-content فقط
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   transition: background t.$duration-normal t.$ease-default,

@@ -5,13 +5,24 @@ import { ConfirmModalComponent } from './components/confirm-modal/confirm-modal'
 
 @Component({
   selector: 'app-root',
-  standalone: true,
   imports: [RouterOutlet, ToastComponent, ConfirmModalComponent],
   template: `
     <router-outlet />
     <app-toast />
     <app-confirm-modal />
   `,
-  styles: [':host { display: block; min-height: 100vh; }'],
+  // ⚠️ :host = block + height 100% + overflow-y:auto
+  // - height: 100% لتمكين sub-layouts (business-layout) باستخدام 100vh
+  // - overflow-y: auto لصفحات بدون business-layout (login, businesses)
+  // - business-layout يضع overflow: hidden محلياً لأنه يدير scroll بنفسه
+  styles: [`
+    :host {
+      display: block;
+      height: 100%;
+      width: 100%;
+      overflow-y: auto;
+      overflow-x: hidden;
+    }
+  `],
 })
 export class App {}
