@@ -1,8 +1,0 @@
-# Split or Die: do not split Drizzle migrations (single-file rule)
-backend/drizzle/
-**/drizzle/**/*.sql
-**/0000_faithful_groot.sql
-
-# Generated build output (minified chunks)
-backend/public/
-**/backend/public/**
