@@ -23,9 +23,9 @@
   <!-- Body -->
   <div class="valex-card-body">
     <form (ngSubmit)="onSubmit()">
-      <div class="grid gap-4" [ngClass]="gridClass()">
+      <div class="grid gap-4" [class]="gridClass()">
         @for (field of visibleFields(); track field.key) {
-          <div [ngClass]="colSpanClass(field.colSpan)">
+          <div [class]="colSpanClass(field.colSpan)">
             <label class="valex-label" [for]="'fld-' + field.key">
               @if (field.icon) {
                 <span class="material-icons-round" style="font-size: 16px; vertical-align: middle">{{ field.icon }}</span>

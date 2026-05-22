@@ -24,15 +24,14 @@ import {
   ChangeDetectionStrategy,
   computed,
 } from '@angular/core';
-import { NgClass, NgTemplateOutlet } from '@angular/common';
+import { NgTemplateOutlet } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { FormField, type Field } from '@angular/forms/signals';
 import type { FormFieldConfig, FieldOption } from '../../types/crud-page.types';
 
 @Component({
   selector: 'app-entity-form',
-  standalone: true,
-  imports: [NgClass, NgTemplateOutlet, FormsModule, FormField],
+  imports: [NgTemplateOutlet, FormsModule, FormField],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './entity-form.component.html',
   styleUrl: './entity-form.component.scss',

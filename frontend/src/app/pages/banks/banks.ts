@@ -9,7 +9,7 @@
  *  بعد: banks.ts = ~110 سطر، banks.html = 1 سطر    (~111 سطر) — انخفاض 78%
  * ============================================================================
  */
-import { Component, computed } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed } from '@angular/core';
 import { CrudPageComponent } from '../../shared/templates/crud-page/crud-page.component';
 import { BaseCrudSignalPageComponent } from '../../shared/base-crud-signal-page.component';
 import type { CrudPageConfig } from '../../shared/types/crud-page.types';
@@ -38,8 +38,9 @@ interface BankForm {
 
 @Component({
   selector: 'app-banks',
-  standalone: true,
   imports: [CrudPageComponent],
+  // ✅ Angular MCP best practice: OnPush + Signals = zoneless-ready
+  changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <app-crud-page
       [config]="config()"

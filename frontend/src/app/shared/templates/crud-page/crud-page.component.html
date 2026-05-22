@@ -19,7 +19,7 @@
 
   <!-- ============ SUMMARY CARDS ============ -->
   @if (hasSummaryCards()) {
-    <div class="grid gap-4 mb-6" [ngClass]="summaryGridClass()">
+    <div class="grid gap-4 mb-6" [class]="summaryGridClass()">
       @for (card of resolvedSummaryCards(); track card.label) {
         <app-summary-card
           [icon]="card.icon"

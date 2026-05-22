@@ -43,7 +43,6 @@ import {
   computed,
   signal,
 } from '@angular/core';
-import { NgClass } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Field } from '@angular/forms/signals';
 
@@ -65,9 +64,7 @@ import type {
 
 @Component({
   selector: 'app-crud-page',
-  standalone: true,
   imports: [
-    NgClass,
     FormsModule,
     PageHeaderComponent,
     LoadingStateComponent,
