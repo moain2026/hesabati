@@ -22,6 +22,12 @@ export class ExchangeRatesComponent extends BasePageComponent {
   rates: any[] = [];
   currencies: any[] = [];
   activeTab: 'currencies' | 'rates' | 'converter' | 'revaluation' = 'currencies';
+  readonly tabBarItems = [
+    { value: 'currencies'  as const, label: 'العملات',        icon: 'paid' },
+    { value: 'rates'       as const, label: 'أسعار الصرف',   icon: 'currency_exchange' },
+    { value: 'converter'   as const, label: 'محول العملات',  icon: 'swap_horiz' },
+    { value: 'revaluation' as const, label: 'إعادة التقييم', icon: 'assessment' },
+  ];
   exchangeDiffAccount: { exists: boolean; accountId?: number } = { exists: false };
 
   // نموذج سعر الصرف

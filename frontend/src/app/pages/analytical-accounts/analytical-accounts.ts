@@ -154,6 +154,17 @@ export class AnalyticalAccountsComponent extends BasePageComponent {
 
   totalCount = computed(() => this.allAccounts().length);
 
+  /** TabBarItem[] - الكل + الأنواع المتاحة مع customColor للأيقونة */
+  typeTabs = computed(() => {
+    const tabs: { value: string; label: string; icon?: string; count?: number; customColor?: string }[] = [
+      { value: '', label: 'الكل', icon: 'grid_view', count: this.totalCount() },
+    ];
+    for (const t of this.availableTypes()) {
+      tabs.push({ value: t.key, label: t.label, icon: t.icon, count: t.count, customColor: t.color });
+    }
+    return tabs;
+  });
+
   protected override onBizIdChange(_bizId: number): void {
     this.load();
   }

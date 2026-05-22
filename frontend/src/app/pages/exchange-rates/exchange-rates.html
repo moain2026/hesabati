@@ -43,28 +43,12 @@
       label="حساب فروقات العملة" />
   </div>
 
-  <div class="valex-card mb-6">
-    <div class="valex-card-body py-3">
-      <div class="flex flex-wrap gap-2">
-        <button class="valex-tab-btn" [class.active]="activeTab === 'currencies'" (click)="activeTab = 'currencies'">
-          <span class="material-icons-round">paid</span>
-          العملات
-        </button>
-        <button class="valex-tab-btn" [class.active]="activeTab === 'rates'" (click)="activeTab = 'rates'">
-          <span class="material-icons-round">currency_exchange</span>
-          أسعار الصرف
-        </button>
-        <button class="valex-tab-btn" [class.active]="activeTab === 'converter'" (click)="activeTab = 'converter'">
-          <span class="material-icons-round">swap_horiz</span>
-          محول العملات
-        </button>
-        <button class="valex-tab-btn" [class.active]="activeTab === 'revaluation'" (click)="activeTab = 'revaluation'">
-          <span class="material-icons-round">assessment</span>
-          إعادة التقييم
-        </button>
-      </div>
-    </div>
-  </div>
+  <app-tab-bar
+    [tabs]="tabBarItems"
+    [activeValue]="activeTab"
+    (tabChange)="activeTab = $event"
+  />
+
 
   @if (activeTab === 'currencies') {
     @if (activeCurrencies.length === 0) {

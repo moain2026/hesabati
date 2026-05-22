@@ -15,22 +15,12 @@
     }
   </app-page-header>
 
-  <div class="valex-card mb-6">
-    <div class="valex-card-body py-3">
-      <div class="flex flex-wrap gap-2">
-        <button class="valex-tab-btn" [class.active]="activeTab() === 'templates'" (click)="switchTab('templates')">
-          <span class="material-icons-round">auto_awesome</span>
-          القوالب
-          <span class="valex-badge valex-badge-secondary" style="font-size:10px;height:18px;padding:0 4px;">{{ operationTypes().length }}</span>
-        </button>
-        <button class="valex-tab-btn" [class.active]="activeTab() === 'categories'" (click)="switchTab('categories')">
-          <span class="material-icons-round">folder</span>
-          التصنيفات
-          <span class="valex-badge valex-badge-secondary" style="font-size:10px;height:18px;padding:0 4px;">{{ dynamicCategories().length }}</span>
-        </button>
-      </div>
-    </div>
-  </div>
+  <app-tab-bar
+    [tabs]="mainTabs()"
+    [activeValue]="activeTab()"
+    (tabChange)="switchTab($event)"
+  />
+
 
   @if (loading()) { <app-loading-state /> }
 
@@ -81,21 +71,11 @@
     </div>
 
     @if (categoryFilters().length > 1) {
-      <div class="valex-card mb-6">
-        <div class="valex-card-body py-3">
-          <div class="flex flex-wrap gap-2">
-            @for (cat of categoryFilters(); track cat.value) {
-              <button class="valex-tab-btn" [class.active]="activeCategory() === cat.value" (click)="activeCategory.set(cat.value)">
-                <span class="material-icons-round">{{ cat.icon }}</span>
-                {{ cat.label }}
-                @if (cat.value !== 'all') {
-                  <span class="valex-badge valex-badge-secondary" style="font-size:10px;height:18px;padding:0 4px;">{{ countByCategory(cat.value) }}</span>
-                }
-              </button>
-            }
-          </div>
-        </div>
-      </div>
+      <app-tab-bar
+        [tabs]="categoryFiltersWithCounts()"
+        [activeValue]="activeCategory()"
+        (tabChange)="activeCategory.set($event)"
+      />
     }
 
     @if (filteredTypes().length === 0) {

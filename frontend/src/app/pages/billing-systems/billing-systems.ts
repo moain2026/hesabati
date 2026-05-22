@@ -154,6 +154,39 @@ export class BillingSystemsComponent extends BasePageComponent {
     { value: 'haseb_deposit', label: 'إيداع حاسب' },
   ];
 
+  /** Tabs الرئيسية للصفحة */
+  mainTabs = computed(() => [
+    { value: 'accounts' as const, label: 'حسابات الفوترة', icon: 'receipt'  },
+    { value: 'systems'  as const, label: 'أنظمة الفوترة',  icon: 'settings', count: this.billingSystems().length },
+    { value: 'types'    as const, label: 'أنواع الحسابات', icon: 'category', count: this.accountTypes().length },
+  ]);
+
+  /** Tabs لاختيار نظام الفوترة (داخل tab "accounts") */
+  systemTabs = computed(() => {
+    const tabs: { value: string; label: string; icon?: string; customColor?: string }[] = [
+      { value: 'all', label: 'الكل' },
+    ];
+    for (const s of this.billingSystems()) {
+      tabs.push({ value: s.name, label: s.name, icon: s.icon, customColor: s.color });
+    }
+    return tabs;
+  });
+
+  /** Tabs لاختيار المحطة */
+  stationTabs = computed(() => {
+    const tabs: { value: string; label: string }[] = [{ value: 'all', label: 'كل المحطات' }];
+    for (const name of this.stationNames()) {
+      tabs.push({ value: name, label: name });
+    }
+    return tabs;
+  });
+
+  /** Tabs لطريقة التحصيل في الفورم */
+  collectionMethodTabs = this.availableCollectionMethods.map((m) => ({
+    value: m.value,
+    label: m.label,
+  }));
+
   protected override onBizIdChange(_bizId: number): void {
     void this.loadAll();
   }

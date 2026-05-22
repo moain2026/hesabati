@@ -58,23 +58,12 @@
     </div>
   }
 
-  <div class="valex-card mb-6">
-    <div class="valex-card-body py-3">
-      <div class="flex flex-wrap gap-2">
-        <button class="valex-tab-btn" [class.active]="activeTab() === 'accounts'" (click)="activeTab.set('accounts')">
-          <span class="material-icons-round">receipt</span> حسابات الفوترة
-        </button>
-        <button class="valex-tab-btn" [class.active]="activeTab() === 'systems'" (click)="activeTab.set('systems')">
-          <span class="material-icons-round">settings</span> أنظمة الفوترة
-          <span class="valex-badge valex-badge-secondary" style="font-size:10px;height:18px;padding:0 4px;">{{ billingSystems().length }}</span>
-        </button>
-        <button class="valex-tab-btn" [class.active]="activeTab() === 'types'" (click)="activeTab.set('types')">
-          <span class="material-icons-round">category</span> أنواع الحسابات
-          <span class="valex-badge valex-badge-secondary" style="font-size:10px;height:18px;padding:0 4px;">{{ accountTypes().length }}</span>
-        </button>
-      </div>
-    </div>
-  </div>
+  <app-tab-bar
+    [tabs]="mainTabs()"
+    [activeValue]="activeTab()"
+    (tabChange)="activeTab.set($event)"
+  />
+
 
   @if (activeTab() === 'accounts') {
     <div class="valex-card mb-4">
@@ -85,20 +74,19 @@
             <input type="text" class="valex-input pe-10" placeholder="ابحث بالاسم أو الموظف..."
               [value]="searchQuery()" (input)="searchQuery.set($any($event.target).value)" />
           </div>
-          <div class="flex flex-wrap gap-2">
-            <button class="valex-tab-btn" [class.active]="activeSystem() === 'all'" (click)="activeSystem.set('all')">الكل</button>
-            @for (s of billingSystems(); track s.name) {
-              <button class="valex-tab-btn" [class.active]="activeSystem() === s.name" (click)="activeSystem.set(s.name)">
-                <span class="material-icons-round" [style.color]="s.color">{{ s.icon }}</span> {{ s.name }}
-              </button>
-            }
-          </div>
-          <div class="flex flex-wrap gap-2">
-            <button class="valex-tab-btn" [class.active]="activeStation() === 'all'" (click)="activeStation.set('all')">كل المحطات</button>
-            @for (name of stationNames(); track name) {
-              <button class="valex-tab-btn" [class.active]="activeStation() === name" (click)="activeStation.set(name)">{{ name }}</button>
-            }
-          </div>
+          <app-tab-bar
+            [tabs]="systemTabs()"
+            [activeValue]="activeSystem()"
+            [wrapInCard]="false"
+            (tabChange)="activeSystem.set($event)"
+          />
+          <app-tab-bar
+            [tabs]="stationTabs()"
+            [activeValue]="activeStation()"
+            [wrapInCard]="false"
+            (tabChange)="activeStation.set($event)"
+          />
+
           <button class="valex-btn valex-btn-primary" (click)="openCreateAccount()">
             <span class="material-icons-round">add</span> حساب جديد
           </button>
@@ -284,12 +272,13 @@
             </div>
             <div class="valex-form-group">
               <label class="valex-label">طريقة التحصيل <span class="text-danger">*</span></label>
-              <div class="flex flex-wrap gap-2">
-                @for (m of availableCollectionMethods; track m.value) {
-                  <button class="valex-tab-btn" [class.active]="accountForm().collectionMethod === m.value"
-                    (click)="setFormField('account', 'collectionMethod', m.value)">{{ m.label }}</button>
-                }
-              </div>
+              <app-tab-bar
+                [tabs]="collectionMethodTabs"
+                [activeValue]="accountForm().collectionMethod"
+                [wrapInCard]="false"
+                (tabChange)="setFormField('account', 'collectionMethod', $event)"
+              />
+
             </div>
             <div class="valex-form-group md:col-span-2">
               <label class="valex-label">العنوان</label>

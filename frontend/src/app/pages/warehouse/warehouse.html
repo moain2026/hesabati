@@ -41,26 +41,20 @@
     }
   </div>
 
-  <div class="valex-card mb-6">
-    <div class="valex-card-body py-3">
-      <div class="flex flex-wrap gap-2">
-        <button class="valex-tab-btn" [class.active]="filterType() === 'all'" (click)="filterType.set('all'); filterSubType.set('all')">الكل ({{ warehouses().length }})</button>
-        <button class="valex-tab-btn" [class.active]="filterType() === 'main'" (click)="filterType.set('main'); filterSubType.set('all')">رئيسي ({{ mainCount() }})</button>
-        <button class="valex-tab-btn" [class.active]="filterType() === 'station'" (click)="filterType.set('station'); filterSubType.set('all')">محطة ({{ stationCount() }})</button>
-        @if (subCount() > 0) {
-          <button class="valex-tab-btn" [class.active]="filterType() === 'sub'" (click)="filterType.set('sub'); filterSubType.set('all')">فرعي ({{ subCount() }})</button>
-        }
-        @if (subTypeFilters().length > 0) {
-          @for (sf of subTypeFilters(); track sf.key) {
-            <button class="valex-tab-btn" [class.active]="filterSubType() === sf.key" (click)="filterSubType.set(sf.key)">
-              <span class="material-icons-round text-base">{{ sf.icon }}</span>
-              {{ sf.label }} ({{ sf.count }})
-            </button>
-          }
-        }
-      </div>
-    </div>
-  </div>
+  <app-tab-bar
+    [tabs]="warehouseTypeTabs()"
+    [activeValue]="filterType()"
+    (tabChange)="changeFilterType($event)"
+  />
+
+  @if (subTypeTabs().length > 0) {
+    <app-tab-bar
+      [tabs]="subTypeTabs()"
+      [activeValue]="filterSubType()"
+      (tabChange)="filterSubType.set($event)"
+    />
+  }
+
 
   @if (loading()) {
     <app-loading-state />

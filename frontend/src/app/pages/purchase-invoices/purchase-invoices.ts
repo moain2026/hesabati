@@ -86,6 +86,22 @@ export class PurchaseInvoicesComponent extends BaseCrudPageComponent<PurchaseInv
     return this.invoices().filter(inv => inv.status === status).length;
   }
 
+  /** TabBarItem[] لتبويبات الفواتير */
+  statusTabs() {
+    const active = this.activeTab();
+    return this.statusKeys.map((key) => {
+      const meta = this.statusMeta[key];
+      return {
+        value: key,
+        label: meta.label,
+        icon: meta.icon,
+        count: this.statusCount(key),
+        // اللون الديناميكي يظهر فقط عند عدم التفعيل
+        customColor: active === key ? undefined : meta.color,
+      };
+    });
+  }
+
   // ===== Form =====
   formHeader = signal({
     supplierId:        null as number | null,

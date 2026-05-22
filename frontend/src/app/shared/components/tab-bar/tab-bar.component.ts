@@ -15,36 +15,34 @@ export interface TabBarItem<T = unknown> {
   icon?: string;
   /** عدّاد يُعرض كشارة بجانب النص — اختياري */
   count?: number | null;
+  /** تعطيل التبويب (يُعرض بشفافية ولا يستجيب للنقر) */
+  disabled?: boolean;
+  /** تخفيف العتامة بصرياً (مثل سنة مالية مقفلة) — يبقى قابلاً للنقر */
+  dimmed?: boolean;
+  /** لون نص ديناميكي للأيقونة/الشارة (يُمرَّر مباشرة كـ CSS color) */
+  customColor?: string | null;
+  /** لون خلفية ديناميكي للشارة */
+  customBgColor?: string | null;
 }
 
 /**
  * مكوّن شريط التبويب الموحّد (Tab Bar)
  *
- * يستبدل النمط المتكرر:
- * ```html
- * <div class="valex-card mb-4">
- *   <div class="valex-card-body py-3">
- *     <div class="flex flex-wrap gap-2 ...">
- *       @for (t of tabs; track t.value) {
- *         <button class="valex-tab-btn" [class.active]="activeFilter() === t.value"
- *                 (click)="activeFilter.set(t.value)">
- *           <span class="material-icons-round">{{ t.icon }}</span>
- *           {{ t.label }}
- *           <span class="valex-badge ...">{{ t.count }}</span>
- *         </button>
- *       }
- *     </div>
- *   </div>
- * </div>
- * ```
+ * يستبدل النمط المتكرر `valex-tab-btn` في 24+ صفحة.
  *
  * بسطر واحد:
  * ```html
- * <app-tab-bar [tabs]="getFilterTabs()" [activeValue]="activeFilter()"
+ * <app-tab-bar [tabs]="filterTabs()" [activeValue]="activeFilter()"
  *              (tabChange)="activeFilter.set($event)">
  *   <select>...</select>  <!-- محتوى إضافي اختياري -->
  * </app-tab-bar>
  * ```
+ *
+ * يدعم:
+ * - icons + count badges
+ * - disabled state
+ * - customColor / customBgColor لحالات ديناميكية (مثل alerts على الفواتير)
+ * - wrapInCard=false لدمج مع عناصر أخرى في نفس البطاقة
  */
 @Component({
   selector: 'app-tab-bar',
@@ -62,16 +60,24 @@ export interface TabBarItem<T = unknown> {
                   type="button"
                   class="valex-tab-btn"
                   [class.active]="isActive(t.value)"
-                  (click)="select(t.value)"
+                  [class.opacity-60]="t.disabled || t.dimmed"
+                  [disabled]="t.disabled"
+                  (click)="select(t)"
                 >
                   @if (t.icon) {
-                    <span class="material-icons-round" style="font-size:16px">{{ t.icon }}</span>
+                    <span
+                      class="material-icons-round"
+                      style="font-size:16px"
+                      [style.color]="t.customColor || null"
+                    >{{ t.icon }}</span>
                   }
                   {{ t.label }}
                   @if (showCount(t.count)) {
                     <span
                       class="valex-badge valex-badge-secondary"
                       style="font-size:10px;min-width:18px;height:18px;padding:0 4px"
+                      [style.color]="t.customColor || null"
+                      [style.background-color]="t.customBgColor || null"
                     >{{ t.count }}</span>
                   }
                 </button>
@@ -90,16 +96,24 @@ export interface TabBarItem<T = unknown> {
                 type="button"
                 class="valex-tab-btn"
                 [class.active]="isActive(t.value)"
-                (click)="select(t.value)"
+                [class.opacity-60]="t.disabled || t.dimmed"
+                [disabled]="t.disabled"
+                (click)="select(t)"
               >
                 @if (t.icon) {
-                  <span class="material-icons-round" style="font-size:16px">{{ t.icon }}</span>
+                  <span
+                    class="material-icons-round"
+                    style="font-size:16px"
+                    [style.color]="t.customColor || null"
+                  >{{ t.icon }}</span>
                 }
                 {{ t.label }}
                 @if (showCount(t.count)) {
                   <span
                     class="valex-badge valex-badge-secondary"
                     style="font-size:10px;min-width:18px;height:18px;padding:0 4px"
+                    [style.color]="t.customColor || null"
+                    [style.background-color]="t.customBgColor || null"
                   >{{ t.count }}</span>
                 }
               </button>
@@ -123,8 +137,9 @@ export class TabBarComponent<T = unknown> {
     return this.activeValue === v;
   }
 
-  select(v: T): void {
-    this.tabChange.emit(v);
+  select(t: TabBarItem<T>): void {
+    if (t.disabled) return;
+    this.tabChange.emit(t.value);
   }
 
   showCount(c: number | null | undefined): boolean {

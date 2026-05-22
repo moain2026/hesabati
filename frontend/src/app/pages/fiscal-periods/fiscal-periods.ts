@@ -42,6 +42,22 @@ export class FiscalPeriodsComponent extends BasePageComponent {
     this.periods = await this.api.getFiscalPeriods(this.bizId, fy.id);
   }
 
+  /** TabBarItem[] للسنوات المالية */
+  get fiscalYearTabs() {
+    return this.fiscalYears.map((fy: any) => ({
+      value: fy.id as number,
+      label: String(fy.year),
+      icon: fy.isClosed ? 'lock' : 'calendar_month',
+      dimmed: !!fy.isClosed, // مقفلة → عتامة منخفضة، لكن قابلة للنقر
+    }));
+  }
+
+  /** يُستدعى عند النقر على سنة من شريط tab */
+  selectYearTab(yearId: number): void {
+    const fy = this.fiscalYears.find((y: any) => y.id === yearId);
+    if (fy) void this.loadPeriods(fy);
+  }
+
   get openPeriodsCount() { return this.periods.filter(p => !p.isClosed).length; }
   get closedPeriodsCount() { return this.periods.filter(p => p.isClosed).length; }
 

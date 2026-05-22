@@ -9,6 +9,7 @@ import { LoadingStateComponent } from '../../shared/components/loading-state/loa
 import { EmptyStateComponent } from '../../shared/components/empty-state/empty-state.component';
 import { StatusBadgeComponent } from '../../shared/components/status-badge/status-badge.component';
 import { PageHeaderComponent } from '../../shared/components/page-header/page-header';
+import { TabBarComponent } from '../../shared/components/tab-bar/tab-bar.component';
 
 interface SidebarSection {
   id: number;
@@ -54,7 +55,7 @@ interface AppUser {
 @Component({
   selector: 'app-sidebar-settings',
   standalone: true,
-  imports: [FormsModule, NgClass, NgFor, PageHeaderComponent, LoadingStateComponent, EmptyStateComponent],
+  imports: [FormsModule, NgClass, NgFor, PageHeaderComponent, LoadingStateComponent, EmptyStateComponent, TabBarComponent],
   templateUrl: './sidebar-settings.html',
   styleUrl: './sidebar-settings.scss',
 })
@@ -65,6 +66,11 @@ export class SidebarSettingsComponent extends BasePageComponent {
 
   override bizId = 0;
   activeTab = signal<'users' | 'sections' | 'items'>('users');
+  readonly mainTabs = [
+    { value: 'users'    as const, label: 'صلاحيات المستخدمين', icon: 'people' },
+    { value: 'sections' as const, label: 'الأقسام',            icon: 'folder' },
+    { value: 'items'    as const, label: 'الشاشات',            icon: 'list' },
+  ];
 
   // Users tab
   users = signal<AppUser[]>([]);

@@ -34,25 +34,11 @@
   }
 
   @if (!loading() && !showForm()) {
-    <div class="valex-card mb-6">
-      <div class="valex-card-body py-3">
-        <div class="flex flex-wrap gap-2">
-          @for (key of statusKeys; track key) {
-            <button
-              class="valex-tab-btn"
-              [class.active]="activeTab() === key"
-              (click)="activeTab.set(key)"
-            >
-              <span class="material-icons-round" [style.color]="activeTab() === key ? '' : statusMeta[key].color">
-                {{ statusMeta[key].icon }}
-              </span>
-              {{ statusMeta[key].label }}
-              <span class="valex-badge valex-badge-secondary purchase-tab-count">{{ statusCount(key) }}</span>
-            </button>
-          }
-        </div>
-      </div>
-    </div>
+    <app-tab-bar
+      [tabs]="statusTabs()"
+      [activeValue]="activeTab()"
+      (tabChange)="activeTab.set($event)"
+    />
   }
 
   @if (!loading() && !showForm()) {

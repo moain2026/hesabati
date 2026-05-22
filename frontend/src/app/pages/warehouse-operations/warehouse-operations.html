@@ -20,22 +20,11 @@
   </div>
 
   @if (!loading() && !showForm()) {
-    <div class="valex-card mb-6">
-      <div class="valex-card-body py-3">
-        <div class="flex flex-wrap gap-2">
-          <button class="valex-tab-btn" [class.active]="activeTab()==='all'" (click)="activeTab.set('all')">
-            <span class="material-icons-round">list</span> الكل
-            <span class="valex-badge valex-badge-secondary wop-tab-count">{{ operations().length }}</span>
-          </button>
-          @for (t of allTypes; track t.key) {
-            <button class="valex-tab-btn" [class.active]="activeTab()===t.key" (click)="activeTab.set(t.key)">
-              <span class="material-icons-round">{{ t.icon }}</span> {{ t.label }}
-              <span class="valex-badge valex-badge-secondary wop-tab-count">{{ stats()[t.key] }}</span>
-            </button>
-          }
-        </div>
-      </div>
-    </div>
+    <app-tab-bar
+      [tabs]="opTabs()"
+      [activeValue]="activeTab()"
+      (tabChange)="activeTab.set($event)"
+    />
   }
 
   @if (loading()) { <app-loading-state message="جاري التحميل..." /> }

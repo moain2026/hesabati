@@ -21,14 +21,14 @@
           <input class="valex-input has-icon-start" type="text" placeholder="بحث بالاسم أو جهة الاتصال..." [ngModel]="searchQuery()" (ngModelChange)="searchQuery.set($event)" />
           <span class="search-icon material-icons-round">search</span>
         </div>
-        <div class="flex flex-wrap gap-2">
-          <button class="valex-tab-btn" [class.active]="filterCategory() === 'all'" (click)="filterCategory.set('all')">الكل</button>
-          @for (cat of categories(); track cat) {
-            <button class="valex-tab-btn" [class.active]="filterCategory() === cat" (click)="filterCategory.set(cat)">
-              <span class="material-icons-round text-sm">{{ getCategoryIcon(cat) }}</span> {{ cat }}
-            </button>
-          }
-        </div>
+        <app-tab-bar
+          class="flex-shrink-0"
+          [tabs]="categoryTabs()"
+          [activeValue]="filterCategory()"
+          [wrapInCard]="false"
+          (tabChange)="filterCategory.set($event)"
+        />
+
       </div>
     </div>
   </div>

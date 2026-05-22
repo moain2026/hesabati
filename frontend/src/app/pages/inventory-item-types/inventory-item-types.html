@@ -23,22 +23,12 @@
     <app-summary-card icon="category" color="warning" [value]="types().length" label="أنواع الأصناف" />
   </div>
 
-  <div class="valex-card mb-6">
-    <div class="valex-card-body py-3">
-      <div class="flex flex-wrap gap-2">
-        <button class="valex-tab-btn" [class.active]="activeTab() === 'items'" (click)="activeTab.set('items')">
-          <span class="material-icons-round">inventory_2</span>
-          الأصناف
-          <span class="valex-badge valex-badge-secondary inventory-tab-count">{{ items().length }}</span>
-        </button>
-        <button class="valex-tab-btn" [class.active]="activeTab() === 'types'" (click)="activeTab.set('types')">
-          <span class="material-icons-round">category</span>
-          أنواع الأصناف
-          <span class="valex-badge valex-badge-secondary inventory-tab-count">{{ types().length }}</span>
-        </button>
-      </div>
-    </div>
-  </div>
+  <app-tab-bar
+    [tabs]="inventoryTabs()"
+    [activeValue]="activeTab()"
+    (tabChange)="activeTab.set($event)"
+  />
+
 
   @if (loading()) {
     <app-loading-state message="جاري التحميل..." />

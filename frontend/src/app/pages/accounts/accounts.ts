@@ -174,6 +174,19 @@ export class AccountsComponent extends BasePageComponent {
     return natures.map(n => ({ ...n, count: accs.filter(a => a.accountSubNatureId === n.id).length }));
   });
 
+  /** TabBarItem[] لتبويبات تصنيفات الحسابات (الكل + الأنواع التي count > 0) */
+  accountTabs = computed(() => {
+    const tabs: { value: number | null; label: string; icon?: string; count?: number }[] = [
+      { value: null, label: 'الكل', icon: 'apps' },
+    ];
+    for (const n of this.naturesStats()) {
+      if (n.count > 0) {
+        tabs.push({ value: Number(n.id), label: n.name, icon: n.icon, count: n.count });
+      }
+    }
+    return tabs;
+  });
+
   protected override onBizIdChange(_bizId: number): void { if (this.bizId > 0) void this.loadAccounts(); }
 
   async loadAccounts() {

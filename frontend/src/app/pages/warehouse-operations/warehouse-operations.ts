@@ -92,6 +92,18 @@ export class WarehouseOperationsComponent extends BaseCrudPageComponent<Warehous
 
   readonly allTypes = Object.entries(OP_META).map(([key, m]) => ({ key, ...m }));
 
+  /** TabBarItem[] - الكل + كل نوع عملية مخزني */
+  opTabs() {
+    const tabs: { value: string; label: string; icon?: string; count?: number }[] = [
+      { value: 'all', label: 'الكل', icon: 'list', count: this.operations().length },
+    ];
+    const s = this.stats() as Record<string, number>;
+    for (const t of this.allTypes) {
+      tabs.push({ value: t.key, label: t.label, icon: t.icon, count: s[t.key] ?? 0 });
+    }
+    return tabs;
+  }
+
   readonly statusOptions = [
     { key: 'draft',     label: 'مسودة',  icon: 'edit_note',    color: '#64748b' },
     { key: 'confirmed', label: 'مؤكد',   icon: 'check_circle', color: '#22c55e' },

@@ -146,6 +146,36 @@ export class WarehouseComponent extends BaseCrudPageComponent<Warehouse> {
     });
   });
 
+  /** TabBarItem[] لفلتر النوع الرئيسي (all/main/station/sub) */
+  warehouseTypeTabs = computed(() => {
+    const tabs: { value: string; label: string; count: number }[] = [
+      { value: 'all',     label: 'الكل',   count: this.warehouses().length },
+      { value: 'main',    label: 'رئيسي',  count: this.mainCount() },
+      { value: 'station', label: 'محطة',   count: this.stationCount() },
+    ];
+    if (this.subCount() > 0) {
+      tabs.push({ value: 'sub', label: 'فرعي', count: this.subCount() });
+    }
+    return tabs;
+  });
+
+  /** TabBarItem[] للأنواع الفرعية الديناميكية */
+  subTypeTabs = computed(() => {
+    return this.subTypeFilters().map((sf) => ({
+      value: sf.key,
+      label: sf.label,
+      icon: sf.icon,
+      count: sf.count,
+      customColor: sf.color,
+    }));
+  });
+
+  /** يُغيّر النوع الرئيسي ويُعيد فلتر النوع الفرعي إلى all */
+  changeFilterType(t: string): void {
+    this.filterType.set(t);
+    this.filterSubType.set('all');
+  }
+
   getStationName(stationId: number | null | undefined): string {
     if (!stationId) return '-';
     const st = this.stations().find(s => s.id === stationId);

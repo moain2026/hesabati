@@ -18,21 +18,12 @@
     </div>
   }
 
-  <div class="valex-card mb-6">
-    <div class="valex-card-body py-3">
-      <div class="flex flex-wrap gap-2">
-        <button class="valex-tab-btn" [class.active]="activeTab() === 'users'" (click)="activeTab.set('users')">
-          <span class="material-icons-round">people</span> صلاحيات المستخدمين
-        </button>
-        <button class="valex-tab-btn" [class.active]="activeTab() === 'sections'" (click)="activeTab.set('sections')">
-          <span class="material-icons-round">folder</span> الأقسام
-        </button>
-        <button class="valex-tab-btn" [class.active]="activeTab() === 'items'" (click)="activeTab.set('items')">
-          <span class="material-icons-round">list</span> الشاشات
-        </button>
-      </div>
-    </div>
-  </div>
+  <app-tab-bar
+    [tabs]="mainTabs"
+    [activeValue]="activeTab()"
+    (tabChange)="activeTab.set($event)"
+  />
+
 
   @if (loading()) {
     <app-loading-state />

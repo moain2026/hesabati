@@ -137,6 +137,19 @@ export class VouchersComponent extends BasePageComponent {
     { key: 'e_wallet', label: 'محفظة',   icon: 'wallet' },
   ];
 
+  /** TabBarItem[] للخزينة */
+  readonly treasuryTabItems = this.treasuryTypes.map(t => ({
+    value: t.key,
+    label: t.label,
+    icon: t.icon,
+  }));
+
+  /** يُستدعى عند اختيار نوع خزينة من الـ tab-bar */
+  onTreasuryTypeChange(key: string): void {
+    this.treasuryType.set(key as 'fund'|'bank'|'exchange'|'e_wallet');
+    this.treasuryId.set(null);
+  }
+
   readonly entityTypeToAccountTypes: Record<string, string[]> = {
     'supplier':  ['supplier'],
     'employee':  ['employee'],

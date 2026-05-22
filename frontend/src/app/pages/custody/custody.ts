@@ -128,6 +128,12 @@ export class CustodyComponent extends BaseCrudPageComponent<CustodyRecord> {
     this.records().filter((r) => r.custodyType === this.activeTab()),
   );
 
+  /** TabBarItem[] لأنواع العهد */
+  readonly custodyTabs = [
+    { value: 'permanent' as const, label: 'دائمة', icon: 'lock' },
+    { value: 'temporary' as const, label: 'مؤقتة', icon: 'schedule' },
+  ];
+
   switchTab(tab: 'permanent' | 'temporary') {
     this.activeTab.set(tab);
   }

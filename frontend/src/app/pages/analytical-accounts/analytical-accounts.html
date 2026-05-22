@@ -17,24 +17,12 @@
     </div>
   </app-page-header>
 
-  <div class="valex-card mb-6">
-    <div class="valex-card-body py-3">
-      <div class="flex flex-wrap gap-2">
-        <button class="valex-tab-btn" [class.active]="filterType() === ''" (click)="filterType.set('')">
-          <span class="material-icons-round">grid_view</span>
-          الكل
-          <span class="valex-badge valex-badge-secondary analytical-count">{{ totalCount() }}</span>
-        </button>
-        @for (t of availableTypes(); track t.key) {
-          <button class="valex-tab-btn" [class.active]="filterType() === t.key" (click)="filterType.set(t.key)">
-            <span class="material-icons-round" [style.color]="t.color">{{ t.icon }}</span>
-            {{ t.label }}
-            <span class="valex-badge valex-badge-secondary analytical-count">{{ t.count }}</span>
-          </button>
-        }
-      </div>
-    </div>
-  </div>
+  <app-tab-bar
+    [tabs]="typeTabs()"
+    [activeValue]="filterType()"
+    (tabChange)="filterType.set($event)"
+  />
+
 
   @if (loading()) {
     <app-loading-state />

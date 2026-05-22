@@ -126,14 +126,13 @@
             </div>
           </div>
           <div class="valex-card-body">
-            <div class="flex flex-wrap gap-2 mb-4">
-              @for (tt of treasuryTypes; track tt.key) {
-                <button class="valex-tab-btn" [class.active]="treasuryType() === tt.key"
-                  (click)="treasuryType.set(tt.key); treasuryId.set(null)">
-                  <span class="material-icons-round">{{ tt.icon }}</span> {{ tt.label }}
-                </button>
-              }
-            </div>
+            <app-tab-bar
+              [tabs]="treasuryTabItems"
+              [activeValue]="treasuryType()"
+              [wrapInCard]="false"
+              (tabChange)="onTreasuryTypeChange($event)"
+            />
+
             @if (treasuryType()) {
               <div class="valex-form-group">
                 <select class="valex-select" [ngModel]="treasuryId()" (ngModelChange)="treasuryId.set(+$event || null); fetchPreview()">

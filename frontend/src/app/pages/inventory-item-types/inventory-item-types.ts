@@ -28,6 +28,13 @@ export class InventoryItemTypesComponent extends BasePageComponent {
   // ===== Tabs =====
   activeTab = signal<'items' | 'types'>('items');
 
+  inventoryTabs() {
+    return [
+      { value: 'items' as const, label: 'الأصناف',       icon: 'inventory_2', count: this.items().length },
+      { value: 'types' as const, label: 'أنواع الأصناف', icon: 'category',    count: this.types().length },
+    ];
+  }
+
   // ===== Items Form =====
   showItemForm = signal(false);
   editingItemId = signal<number | null>(null);

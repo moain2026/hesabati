@@ -75,14 +75,13 @@
   </div>
 
   <!-- Tabs -->
-  <div class="flex gap-2 mb-4">
-    <button class="valex-tab-btn" [class.active]="activeTab() === 'permanent'" (click)="switchTab('permanent')">
-      <span class="material-icons-round" style="font-size:16px">lock</span> دائمة
-    </button>
-    <button class="valex-tab-btn" [class.active]="activeTab() === 'temporary'" (click)="switchTab('temporary')">
-      <span class="material-icons-round" style="font-size:16px">schedule</span> مؤقتة
-    </button>
-  </div>
+  <app-tab-bar
+    [tabs]="custodyTabs"
+    [activeValue]="activeTab()"
+    [wrapInCard]="false"
+    (tabChange)="switchTab($event)"
+  />
+
 
   @if (loading()) {
     <app-loading-state [loading]="loading()" />

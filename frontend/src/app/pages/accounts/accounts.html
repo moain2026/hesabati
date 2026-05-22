@@ -39,26 +39,13 @@
             }
           }
         </select>
-        <div class="flex flex-wrap gap-2">
-          <button
-            class="valex-tab-btn"
-            [class.active]="activeNatureFilter() === null"
-            (click)="setNatureFilter(null)"
-          >
-            <span class="material-icons-round" style="font-size:16px">apps</span>الكل
-          </button>
-          @for (n of naturesStats(); track n.id) {
-            @if (n.count > 0) {
-              <button
-                class="valex-tab-btn"
-                [class.active]="activeNatureFilter() === n.id"
-                (click)="setNatureFilter(n.id)"
-              >
-                <span class="material-icons-round" style="font-size:16px">{{ n.icon }}</span>{{ n.name }} ({{ n.count }})
-              </button>
-            }
-          }
-        </div>
+        <app-tab-bar
+          [tabs]="accountTabs()"
+          [activeValue]="activeNatureFilter()"
+          [wrapInCard]="false"
+          (tabChange)="setNatureFilter($event)"
+        />
+
       </div>
     </div>
   </div>

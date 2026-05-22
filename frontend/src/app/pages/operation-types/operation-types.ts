@@ -123,6 +123,22 @@ export class OperationTypesComponent extends BasePageComponent {
     return filters;
   });
 
+  /** TabBarItem[] لتبويب الصفحة الرئيسي (قوالب / تصنيفات) */
+  mainTabs = computed(() => [
+    { value: 'templates' as const,  label: 'القوالب',    icon: 'auto_awesome', count: this.operationTypes().length },
+    { value: 'categories' as const, label: 'التصنيفات', icon: 'folder',       count: this.dynamicCategories().length },
+  ]);
+
+  /** TabBarItem[] لفلاتر التصنيفات مع count */
+  categoryFiltersWithCounts = computed(() => {
+    return this.categoryFilters().map((f) => ({
+      value: f.value,
+      label: f.label,
+      icon: f.icon,
+      count: f.value === 'all' ? null : this.countByCategory(f.value),
+    }));
+  });
+
   operationTypeOptions = [
     { value: 'receipt', label: 'سند قبض', icon: 'call_received', desc: 'استلام أموال', color: '#10b981', group: 'مالية' },
     { value: 'payment', label: 'سند صرف', icon: 'call_made', desc: 'صرف أموال', color: '#ef4444', group: 'مالية' },

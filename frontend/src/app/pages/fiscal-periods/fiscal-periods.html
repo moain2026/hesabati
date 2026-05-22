@@ -39,25 +39,12 @@
       (action)="showCreateForm = true"
     />
   } @else {
-    <div class="valex-card mb-4">
-      <div class="valex-card-body py-3">
-        <div class="flex flex-wrap gap-2">
-          @for (fy of fiscalYears; track fy.id) {
-            <button
-              type="button"
-              class="valex-tab-btn"
-              [class.active]="selectedYear?.id === fy.id"
-              [class.opacity-60]="fy.isClosed"
-              (click)="loadPeriods(fy)"
-              [title]="'سنة ' + fy.year"
-            >
-              <span class="material-icons-round">{{ fy.isClosed ? 'lock' : 'calendar_month' }}</span>
-              {{ fy.year }}
-            </button>
-          }
-        </div>
-      </div>
-    </div>
+    <app-tab-bar
+      [tabs]="fiscalYearTabs"
+      [activeValue]="selectedYear?.id ?? null"
+      (tabChange)="selectYearTab($event)"
+    />
+
 
     @if (selectedYear) {
       <div class="valex-card mb-6">
