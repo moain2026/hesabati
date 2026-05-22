@@ -89,7 +89,7 @@ export class FiscalPeriodsComponent extends BasePageComponent {
     try {
       await this.api.reopenFiscalPeriod(this.bizId, period.id);
       this.toast.success(`تم فتح فترة ${this.getMonthName(period.month)}`);
-      this.loadPeriods();
+      this.loadPeriods(this.selectedYear);
     } catch (e: any) {
       this.toast.error(e?.error?.error || 'فشل فتح الفترة');
     }

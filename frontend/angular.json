@@ -115,7 +115,9 @@
               "pmsuqiyg.gensparkclaw.com",
               "localhost",
               ".sslip.io",
-              ".gensparkclaw.com"
+              ".gensparkclaw.com",
+              ".sandbox.novita.ai",
+              ".novita.ai"
             ],
             "proxyConfig": "proxy.conf.json"
           }
