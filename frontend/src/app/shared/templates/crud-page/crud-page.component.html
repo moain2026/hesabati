@@ -1,0 +1,115 @@
+<!-- ==========================================================================
+     <app-crud-page> — القالب الموحّد الإلزامي
+     ⚠️ لا تنسخ هذا التصميم لصفحات أخرى. استخدم المكوّن مباشرة.
+     ========================================================================== -->
+<div class="page-content">
+  <!-- ============ HEADER ============ -->
+  <app-page-header
+    [title]="config().title"
+    [icon]="pageIcon()"
+    [breadcrumb]="config().breadcrumb || []"
+  >
+    @if (canCreate()) {
+      <button class="valex-btn valex-btn-primary" type="button" (click)="onCreate()">
+        <span class="material-icons-round">add</span>
+        {{ createLabel() }}
+      </button>
+    }
+  </app-page-header>
+
+  <!-- ============ SUMMARY CARDS ============ -->
+  @if (hasSummaryCards()) {
+    <div class="grid gap-4 mb-6" [ngClass]="summaryGridClass()">
+      @for (card of resolvedSummaryCards(); track card.label) {
+        <app-summary-card
+          [icon]="card.icon"
+          [color]="card.color || 'primary'"
+          [customColor]="card.customColor || ''"
+          [value]="$any(card.value)"
+          [label]="card.label"
+          [valueFormat]="card.valueFormat || 'number'"
+          [currency]="card.currency || ''"
+          [subtext]="card.subtext || ''"
+        />
+      }
+    </div>
+  }
+
+  <!-- ============ FILTER BAR (Tabs + Search) ============ -->
+  @if (hasTabs() || config().searchEnabled !== false) {
+    <div class="mb-4">
+      @if (hasTabs()) {
+        <app-tab-bar
+          [tabs]="resolvedTabs()"
+          [activeValue]="activeTab()"
+          (tabChange)="onTabChange($any($event))"
+        >
+          @if (config().searchEnabled !== false) {
+            <input
+              type="search"
+              class="valex-input"
+              style="min-width: 200px; max-width: 280px"
+              placeholder="بحث..."
+              [ngModel]="searchTerm()"
+              (ngModelChange)="onSearch($event)"
+            />
+          }
+        </app-tab-bar>
+      } @else {
+        <div class="valex-card">
+          <div class="valex-card-body flex items-center gap-3">
+            <span class="material-icons-round text-muted">search</span>
+            <input
+              type="search"
+              class="valex-input"
+              placeholder="بحث..."
+              [ngModel]="searchTerm()"
+              (ngModelChange)="onSearch($event)"
+            />
+          </div>
+        </div>
+      }
+    </div>
+  }
+
+  <!-- ============ FORM (Signal Forms) ============ -->
+  @if (showForm() && form()) {
+    <app-entity-form
+      [fields]="config().formFields"
+      [form]="$any(form())"
+      [title]="formTitle()"
+      [icon]="pageIcon()"
+      [isEditing]="isEditing()"
+      [saving]="saving()"
+      (save)="onSave()"
+      (cancel)="onCancel()"
+    />
+  }
+
+  <!-- ============ LOADING ============ -->
+  @if (loading()) {
+    <app-loading-state [loading]="loading()" />
+  }
+
+  <!-- ============ EMPTY STATE ============ -->
+  @else if (!data().length && !showForm()) {
+    <app-empty-state
+      [icon]="pageIcon()"
+      [title]="config().emptyTitle || ('لا توجد ' + config().title)"
+      [subtitle]="config().emptySubtitle || 'ابدأ بإضافة عنصر جديد'"
+      [actionLabel]="createLabel()"
+      (addClick)="onCreate()"
+    />
+  }
+
+  <!-- ============ DATA TABLE ============ -->
+  @else if (!showForm()) {
+    <app-data-table
+      [columns]="tableColumns()"
+      [data]="data()"
+      [loading]="false"
+      (edit)="onEdit($event)"
+      (delete)="onDelete($event)"
+    />
+  }
+</div>

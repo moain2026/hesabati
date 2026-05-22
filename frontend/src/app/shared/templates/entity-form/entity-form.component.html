@@ -1,0 +1,251 @@
+<!-- ==========================================================================
+     <app-entity-form> — قالب النموذج الموحّد بـ Signal Forms
+     ⚠️ Signal Forms يدير: value, disabled, readonly, required, name تلقائياً
+     لا تكتب أي ngModel/FormControl يدوي.
+     ========================================================================== -->
+<div class="valex-card mb-6">
+  <!-- Header -->
+  <div class="valex-card-header">
+    <div class="flex items-center gap-3">
+      <div class="w-9 h-9 rounded-lg flex items-center justify-center bg-primary/10 text-primary">
+        <span class="material-icons-round">{{ icon() }}</span>
+      </div>
+      <h3 class="valex-card-title">{{ title() }}</h3>
+      @if (isEditing()) {
+        <span class="valex-badge valex-badge-warning">تعديل</span>
+      }
+    </div>
+    <button class="valex-icon-btn" type="button" (click)="onCancel()">
+      <span class="material-icons-round">close</span>
+    </button>
+  </div>
+
+  <!-- Body -->
+  <div class="valex-card-body">
+    <form (ngSubmit)="onSubmit()">
+      <div class="grid gap-4" [ngClass]="gridClass()">
+        @for (field of visibleFields(); track field.key) {
+          <div [ngClass]="colSpanClass(field.colSpan)">
+            <label class="valex-label" [for]="'fld-' + field.key">
+              @if (field.icon) {
+                <span class="material-icons-round" style="font-size: 16px; vertical-align: middle">{{ field.icon }}</span>
+              }
+              {{ field.label }}
+              @if (field.required) {
+                <span class="text-danger">*</span>
+              }
+            </label>
+
+            @switch (field.type) {
+              <!-- ============ TEXT ============ -->
+              @case ('text') {
+                <input
+                  type="text"
+                  class="valex-input"
+                  [id]="'fld-' + field.key"
+                  [placeholder]="field.placeholder || ''"
+                  [dir]="field.dir || 'auto'"
+                  [formField]="getFieldControl(field.key)"
+                  [class.is-invalid]="isFieldInvalid(field.key)"
+                />
+              }
+              @case ('email') {
+                <input
+                  type="email"
+                  class="valex-input"
+                  [id]="'fld-' + field.key"
+                  [placeholder]="field.placeholder || ''"
+                  dir="ltr"
+                  [formField]="getFieldControl(field.key)"
+                  [class.is-invalid]="isFieldInvalid(field.key)"
+                />
+              }
+              @case ('tel') {
+                <input
+                  type="tel"
+                  class="valex-input"
+                  [id]="'fld-' + field.key"
+                  [placeholder]="field.placeholder || ''"
+                  dir="ltr"
+                  [formField]="getFieldControl(field.key)"
+                  [class.is-invalid]="isFieldInvalid(field.key)"
+                />
+              }
+              @case ('password') {
+                <input
+                  type="password"
+                  class="valex-input"
+                  [id]="'fld-' + field.key"
+                  [placeholder]="field.placeholder || ''"
+                  [formField]="getFieldControl(field.key)"
+                  [class.is-invalid]="isFieldInvalid(field.key)"
+                />
+              }
+              @case ('number') {
+                <input
+                  type="number"
+                  class="valex-input"
+                  [id]="'fld-' + field.key"
+                  [placeholder]="field.placeholder || ''"
+                  dir="ltr"
+                  [formField]="getFieldControl(field.key)"
+                  [class.is-invalid]="isFieldInvalid(field.key)"
+                />
+              }
+              @case ('amount') {
+                <input
+                  type="number"
+                  class="valex-input"
+                  [id]="'fld-' + field.key"
+                  [placeholder]="field.placeholder || '0.00'"
+                  step="0.01"
+                  dir="ltr"
+                  [formField]="getFieldControl(field.key)"
+                  [class.is-invalid]="isFieldInvalid(field.key)"
+                />
+              }
+              @case ('currency') {
+                <input
+                  type="number"
+                  class="valex-input"
+                  [id]="'fld-' + field.key"
+                  [placeholder]="field.placeholder || '0.00'"
+                  step="0.0001"
+                  dir="ltr"
+                  [formField]="getFieldControl(field.key)"
+                  [class.is-invalid]="isFieldInvalid(field.key)"
+                />
+              }
+              @case ('date') {
+                <input
+                  type="date"
+                  class="valex-input"
+                  [id]="'fld-' + field.key"
+                  [formField]="getFieldControl(field.key)"
+                  [class.is-invalid]="isFieldInvalid(field.key)"
+                />
+              }
+              @case ('datetime') {
+                <input
+                  type="datetime-local"
+                  class="valex-input"
+                  [id]="'fld-' + field.key"
+                  [formField]="getFieldControl(field.key)"
+                  [class.is-invalid]="isFieldInvalid(field.key)"
+                />
+              }
+
+              <!-- ============ TEXTAREA ============ -->
+              @case ('textarea') {
+                <textarea
+                  class="valex-input"
+                  [id]="'fld-' + field.key"
+                  [placeholder]="field.placeholder || ''"
+                  [rows]="field.rows || 3"
+                  [formField]="getFieldControl(field.key)"
+                  [class.is-invalid]="isFieldInvalid(field.key)"
+                ></textarea>
+              }
+
+              <!-- ============ SELECT ============ -->
+              @case ('select') {
+                <select
+                  class="valex-select"
+                  [id]="'fld-' + field.key"
+                  [formField]="getFieldControl(field.key)"
+                  [class.is-invalid]="isFieldInvalid(field.key)"
+                >
+                  <option [ngValue]="null">-- {{ field.placeholder || 'اختر' }} --</option>
+                  @for (opt of getOptions(field); track opt.value) {
+                    <option [ngValue]="opt.value" [disabled]="opt.disabled">
+                      {{ opt.label }}
+                    </option>
+                  }
+                </select>
+              }
+
+              <!-- ============ CHECKBOX ============ -->
+              @case ('checkbox') {
+                <label class="valex-checkbox-wrapper inline-flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    class="valex-checkbox"
+                    [id]="'fld-' + field.key"
+                    [formField]="getFieldControl(field.key)"
+                  />
+                  <span>{{ field.placeholder || field.label }}</span>
+                </label>
+              }
+
+              <!-- ============ SWITCH ============ -->
+              @case ('switch') {
+                <label class="valex-switch-wrapper inline-flex items-center gap-3 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    class="valex-switch"
+                    [id]="'fld-' + field.key"
+                    [formField]="getFieldControl(field.key)"
+                  />
+                  <span class="text-sm">{{ field.placeholder || '' }}</span>
+                </label>
+              }
+
+              <!-- ============ MULTISELECT ============ -->
+              @case ('multiselect') {
+                <select
+                  class="valex-select"
+                  multiple
+                  [id]="'fld-' + field.key"
+                  [formField]="getFieldControl(field.key)"
+                  [class.is-invalid]="isFieldInvalid(field.key)"
+                >
+                  @for (opt of getOptions(field); track opt.value) {
+                    <option [ngValue]="opt.value" [disabled]="opt.disabled">
+                      {{ opt.label }}
+                    </option>
+                  }
+                </select>
+              }
+
+              <!-- ============ CUSTOM (template projection) ============ -->
+              @case ('custom') {
+                @if (field.template) {
+                  <ng-container *ngTemplateOutlet="field.template; context: { $implicit: getFieldControl(field.key), field: field }"></ng-container>
+                }
+              }
+            }
+
+            <!-- Hint -->
+            @if (field.hint && !isFieldInvalid(field.key)) {
+              <small class="text-muted text-xs block mt-1">{{ field.hint }}</small>
+            }
+
+            <!-- Error message -->
+            @if (isFieldInvalid(field.key)) {
+              <small class="text-danger text-xs block mt-1">
+                <span class="material-icons-round" style="font-size: 14px; vertical-align: middle">error</span>
+                {{ firstError(field.key) || field.errorMessage || 'قيمة غير صحيحة' }}
+              </small>
+            }
+          </div>
+        }
+      </div>
+
+      <!-- Footer (inside form for proper submit) -->
+      <div class="flex items-center justify-end gap-3 mt-6 pt-4 border-t" style="border-color: var(--color-defaultborder)">
+        <button type="button" class="valex-btn valex-btn-outline" (click)="onCancel()" [disabled]="saving()">
+          إلغاء
+        </button>
+        <button type="submit" class="valex-btn valex-btn-primary" [disabled]="saving()">
+          @if (saving()) {
+            <span class="valex-spinner spinner-sm"></span>
+            جاري الحفظ...
+          } @else {
+            <span class="material-icons-round">save</span>
+            {{ saveLabel() }}
+          }
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

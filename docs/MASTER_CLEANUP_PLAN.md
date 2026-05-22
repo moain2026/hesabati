@@ -2,9 +2,41 @@
 
 > **التاريخ**: 2026-05-22  
 > **الفرع**: `genspark_ai_developer` | **PR**: #52  
-> **الوضع الحالي**: 78% نظيف  
+> **الوضع الحالي**: 80% نظيف  
 > **الهدف**: 100% نظيف  
 > **المدة المقدّرة**: 12 مرحلة × ~30-60 دقيقة لكل مرحلة
+
+---
+
+## 🚀 المرحلة 0.5 (الأولوية القصوى): القالب الموحّد الصارم + Signal Forms
+
+> **✅ مكتملة (2026-05-22)** — البنية التحتية جاهزة.  
+> 📄 وثيقة الإلزام: [`STRICT_TEMPLATE_RULES.md`](./STRICT_TEMPLATE_RULES.md)
+
+### ما تم إنجازه:
+- ✅ `crud-page.types.ts` — 305 سطر من أنواع TypeScript صارمة (CrudColumn, FormFieldConfig, CrudPageConfig, ...)
+- ✅ `<app-entity-form>` — نموذج موحّد مبني على **Angular Signal Forms** يدعم 15+ نوع حقل
+- ✅ `<app-crud-page>` — قالب الصفحة الموحّد الإلزامي (يجمع: page-header, summary-cards, tab-bar, search, data-table, entity-form, delete-confirm)
+- ✅ `BaseCrudSignalPageComponent` — قاعدة موحّدة (load, save, delete, filter, search تلقائي)
+- ✅ Proof of Concept: صفحة `banks` مهاجَرة بالكامل (500 سطر → 227 سطر = **-54.6%**)
+- ✅ Build: 0 TypeScript errors
+
+### الفائدة الإلزامية القادمة:
+| الصفحات | الكود الحالي | بعد الهجرة | التوفير |
+|---|---|---|---|
+| 35 صفحة CRUD | ~17,500 سطر | ~4,000 سطر | **-77%** = **-13,500 سطر** |
+| وقت إضافة صفحة جديدة | 4 ساعات | 30 دقيقة | **×8 أسرع** |
+
+### القواعد الصارمة المُلزِمة (في `STRICT_TEMPLATE_RULES.md`):
+- ❌ ممنوع كتابة `<input>` / `<select>` / `<form>` يدوي في الصفحات
+- ❌ ممنوع `[(ngModel)]` في صفحات CRUD
+- ❌ ممنوع نسخ template من صفحة لأخرى
+- ❌ ممنوع validation imperative
+- ❌ ممنوع modal للحذف (مدمج تلقائياً)
+- ✅ مسموح فقط: تكوين عبر `getConfig()` + `loadData()` + `persistEntity()` + `deleteEntity()`
+
+### المرحلة التالية (Phase 0.5b): هجرة 34 صفحة CRUD المتبقية للقالب الموحّد
+
 
 ---
 
