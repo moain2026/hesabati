@@ -53,6 +53,9 @@ importers:
       autoprefixer:
         specifier: ^10.4.27
         version: 10.4.27(postcss@8.5.8)
+      iconify-icon:
+        specifier: ^3.0.2
+        version: 3.0.2
       jspdf:
         specifier: ^4.2.1
         version: 4.2.1
@@ -579,6 +582,9 @@ packages:
     engines: {node: '>=18.14.1'}
     peerDependencies:
       hono: '>=4.12.12'
+
+  '@iconify/types@2.0.0':
+    resolution: {integrity: sha512-+wluvCrRhXrhyOmRDJ3q8mux9JkKy5SJ/v8ol2tu4FVjyYvtEzkc/3pK15ET6RKg4b4w4BmTk1+gsCUhf21Ykg==}
 
   '@inquirer/ansi@1.0.2':
     resolution: {integrity: sha512-S8qNSZiYzFd0wAcyG5AXCvUHC5Sr7xpZ9wZ2py9XR88jUz8wooStVx5M6dRzczbBWjic9NP7+rY0Xi7qqK/aMQ==}
@@ -2003,6 +2009,9 @@ packages:
   https-proxy-agent@7.0.6:
     resolution: {integrity: sha512-vK9P5/iUfdl95AI+JVyUuIcVtd4ofvtrOr3HNtM2yxC9bnMbEdp3x01OhQNnjb8IJYi38VlTE3mBXwcfvywuSw==}
     engines: {node: '>= 14'}
+
+  iconify-icon@3.0.2:
+    resolution: {integrity: sha512-DYPAumiUeUeT/GHT8x2wrAVKn1FqZJqFH0Y5pBefapWRreV1BBvqBVMb0020YQ2njmbR59r/IathL2d2OrDrxA==}
 
   iconv-lite@0.7.2:
     resolution: {integrity: sha512-im9DjEDQ55s9fL4EYzOAv0yMqmMBSZp6G0VvFyTMPKWxiSBHUj9NW/qqLmXUwXrrM7AvqSlTCfvqRb0cM8yYqw==}
@@ -3477,6 +3486,8 @@ snapshots:
     dependencies:
       hono: 4.12.12
 
+  '@iconify/types@2.0.0': {}
+
   '@inquirer/ansi@1.0.2': {}
 
   '@inquirer/checkbox@4.3.2':
@@ -4736,6 +4747,10 @@ snapshots:
       debug: 4.4.3
     transitivePeerDependencies:
       - supports-color
+
+  iconify-icon@3.0.2:
+    dependencies:
+      '@iconify/types': 2.0.0
 
   iconv-lite@0.7.2:
     dependencies:

@@ -73,7 +73,7 @@ export class BanksComponent extends BaseCrudSignalPageComponent<BankEntity, Bank
   override getConfig(): CrudPageConfig<BankEntity, BankForm> {
     return {
       title: 'البنوك',
-      icon: 'account_balance',
+      icon: 'fluent-emoji:bank',
       breadcrumb: ['الرئيسية', 'البنوك'],
       createLabel: 'بنك جديد',
       emptyTitle: 'لا توجد بنوك',
@@ -81,7 +81,7 @@ export class BanksComponent extends BaseCrudSignalPageComponent<BankEntity, Bank
 
       // ----- الأعمدة (جدول العرض) -----
       columns: [
-        { key: 'name', label: 'الاسم', type: 'text', icon: 'account_balance' },
+        { key: 'name', label: 'الاسم', type: 'text', icon: 'fluent-emoji:bank' },
         { key: 'provider', label: 'المزود', type: 'text' },
         { key: 'accountNumber', label: 'رقم الحساب', type: 'text' },
         { key: 'responsiblePerson', label: 'المسؤول', type: 'text' },
@@ -96,17 +96,17 @@ export class BanksComponent extends BaseCrudSignalPageComponent<BankEntity, Bank
 
       // ----- تبويبات الفلترة -----
       tabs: () => [
-        { value: 'all', label: 'الكل', icon: 'apps', count: this.data().length },
+        { value: 'all', label: 'الكل', icon: 'fluent-emoji:books', count: this.data().length },
         {
           value: 'active',
           label: 'نشط',
-          icon: 'check_circle',
+          icon: 'fluent-emoji:check-mark-button',
           count: this.data().filter((b) => b.isActive).length,
         },
         {
           value: 'inactive',
           label: 'متوقف',
-          icon: 'cancel',
+          icon: 'fluent-emoji:cross-mark',
           count: this.data().filter((b) => !b.isActive).length,
         },
       ],
@@ -118,19 +118,19 @@ export class BanksComponent extends BaseCrudSignalPageComponent<BankEntity, Bank
       // ----- كروت الإحصائيات -----
       summaryCards: () => [
         {
-          icon: 'account_balance',
+          icon: 'fluent-emoji:bank',
           color: 'primary',
           label: 'إجمالي البنوك',
           value: this.data().length,
         },
         {
-          icon: 'check_circle',
+          icon: 'fluent-emoji:check-mark-button',
           color: 'success',
           label: 'البنوك النشطة',
           value: this.data().filter((b) => b.isActive).length,
         },
         {
-          icon: 'filter_list',
+          icon: 'fluent-emoji:control-knobs',
           color: 'secondary',
           label: 'النتائج',
           value: this.filteredData().length,
@@ -155,7 +155,7 @@ export class BanksComponent extends BaseCrudSignalPageComponent<BankEntity, Bank
           required: true,
           placeholder: 'مثال: كريمي الحديدة',
           colSpan: 12,
-          icon: 'account_balance',
+          icon: 'fluent-emoji:bank',
         },
         {
           key: 'accountId',
@@ -172,21 +172,21 @@ export class BanksComponent extends BaseCrudSignalPageComponent<BankEntity, Bank
           type: 'text',
           placeholder: '0123456789',
           dir: 'ltr',
-          icon: 'tag',
+          icon: 'fluent-emoji:input-numbers',
         },
         {
           key: 'provider',
           label: 'البنك / المزوّد',
           type: 'text',
           placeholder: 'اسم البنك',
-          icon: 'business',
+          icon: 'fluent-emoji:office-building',
         },
         {
           key: 'responsiblePerson',
           label: 'المسؤول',
           type: 'text',
           placeholder: 'اسم المسؤول',
-          icon: 'person',
+          icon: 'fluent-emoji:bust-in-silhouette',
         },
         {
           key: 'notes',

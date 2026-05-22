@@ -1,5 +1,6 @@
 import { Component, input } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { AppIconComponent } from '../../icons/app-icon.component';
 
 /**
  * مكوّن رأس الصفحة — تصميم Valex
@@ -10,8 +11,7 @@ import { RouterLink } from '@angular/router';
  */
 @Component({
   selector: 'app-page-header',
-  standalone: true,
-  imports: [RouterLink],
+  imports: [RouterLink, AppIconComponent],
   templateUrl: './page-header.html',
   styleUrl: './page-header.scss',
 })

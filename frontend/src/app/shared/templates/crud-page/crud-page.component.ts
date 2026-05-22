@@ -53,6 +53,7 @@ import { SummaryCardComponent } from '../../components/summary-card/summary-card
 import { TabBarComponent } from '../../components/tab-bar/tab-bar.component';
 import { DataTableComponent, type TableColumn } from '../../components/data-table/data-table';
 import { EntityFormComponent } from '../entity-form/entity-form.component';
+import { AppIconComponent } from '../../icons/app-icon.component';
 
 import type {
   CrudPageConfig,
@@ -73,6 +74,7 @@ import type {
     TabBarComponent,
     DataTableComponent,
     EntityFormComponent,
+    AppIconComponent,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './crud-page.component.html',

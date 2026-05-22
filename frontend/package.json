@@ -26,6 +26,7 @@
     "@tailwindcss/postcss": "^4.2.1",
     "apexcharts": "^5.10.4",
     "autoprefixer": "^10.4.27",
+    "iconify-icon": "^3.0.2",
     "jspdf": "^4.2.1",
     "jspdf-autotable": "^5.0.7",
     "ng-apexcharts": "^2.3.0",

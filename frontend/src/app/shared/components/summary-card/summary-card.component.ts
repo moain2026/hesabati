@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { DecimalPipe } from '@angular/common';
+import { AppIconComponent } from '../../icons/app-icon.component';
 
 /**
  * بطاقة ملخص خفيفة — تصميم Valex الموحد
@@ -38,8 +39,7 @@ import { DecimalPipe } from '@angular/common';
  */
 @Component({
   selector: 'app-summary-card',
-  standalone: true,
-  imports: [DecimalPipe],
+  imports: [DecimalPipe, AppIconComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="valex-card p-4 flex items-center" [class.gap-3]="iconSize === 'sm'" [class.gap-4]="iconSize !== 'sm'">
@@ -53,7 +53,7 @@ import { DecimalPipe } from '@angular/common';
         [style.background]="customColor ? customColor + '1f' : null"
         [style.color]="customColor || null"
       >
-        <span class="material-icons-round" [class.text-2xl]="iconSize !== 'sm'">{{ icon }}</span>
+        <app-icon [icon]="icon" [size]="iconSize === 'sm' ? 22 : 28"></app-icon>
       </div>
       <div class="min-w-0 flex-1">
         <div

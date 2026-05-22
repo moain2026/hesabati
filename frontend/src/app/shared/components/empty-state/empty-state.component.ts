@@ -1,4 +1,5 @@
 import { Component, input, output } from '@angular/core';
+import { AppIconComponent } from '../../icons/app-icon.component';
 
 /**
  * مكوّن الحالة الفارغة — تصميم Valex
@@ -6,12 +7,11 @@ import { Component, input, output } from '@angular/core';
  */
 @Component({
   selector: 'app-empty-state',
-  standalone: true,
-  imports: [],
+  imports: [AppIconComponent],
   template: `
     <div class="valex-empty-state">
       <div class="empty-icon-wrap">
-        <span class="material-icons-round empty-icon">{{ icon() }}</span>
+        <app-icon [icon]="icon()" [size]="48"></app-icon>
       </div>
       <h3 class="empty-title">{{ title() }}</h3>
       @if (subtitle()) {
@@ -19,7 +19,7 @@ import { Component, input, output } from '@angular/core';
       }
       @if (actionLabel()) {
         <button class="valex-btn valex-btn-primary mt-3" (click)="addClick.emit()">
-          <span class="material-icons-round" style="font-size:1rem">add</span>
+          <app-icon icon="fluent-emoji:plus" [size]="16"></app-icon>
           {{ actionLabel() }}
         </button>
       }

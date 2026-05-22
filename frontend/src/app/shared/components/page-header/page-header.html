@@ -7,7 +7,7 @@
           <li class="breadcrumb-item" [class.active]="last">
             @if (!last) {
               <span>{{ crumb }}</span>
-              <span class="breadcrumb-sep material-icons-round">chevron_left</span>
+              <app-icon class="breadcrumb-sep" icon="fluent-emoji:black-small-square" [size]="14"></app-icon>
             } @else {
               <span>{{ crumb }}</span>
             }
@@ -22,7 +22,7 @@
     <div class="page-title-group">
       @if (icon()) {
         <div class="page-icon-wrap">
-          <span class="material-icons-round">{{ icon() }}</span>
+          <app-icon [icon]="icon()" [size]="32"></app-icon>
         </div>
       }
       <h1 class="page-title">{{ title() }}</h1>

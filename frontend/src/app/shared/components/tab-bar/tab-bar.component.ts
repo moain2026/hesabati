@@ -5,6 +5,7 @@ import {
   Input,
   Output,
 } from '@angular/core';
+import { AppIconComponent } from '../../icons/app-icon.component';
 
 export interface TabBarItem<T = unknown> {
   /** قيمة التبويب (تستخدم للمقارنة مع activeValue) */
@@ -46,8 +47,7 @@ export interface TabBarItem<T = unknown> {
  */
 @Component({
   selector: 'app-tab-bar',
-  standalone: true,
-  imports: [],
+  imports: [AppIconComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     @if (wrapInCard) {
@@ -65,11 +65,7 @@ export interface TabBarItem<T = unknown> {
                   (click)="select(t)"
                 >
                   @if (t.icon) {
-                    <span
-                      class="material-icons-round"
-                      style="font-size:16px"
-                      [style.color]="t.customColor || null"
-                    >{{ t.icon }}</span>
+                    <app-icon [icon]="t.icon" [size]="16"></app-icon>
                   }
                   {{ t.label }}
                   @if (showCount(t.count)) {
@@ -101,11 +97,7 @@ export interface TabBarItem<T = unknown> {
                 (click)="select(t)"
               >
                 @if (t.icon) {
-                  <span
-                    class="material-icons-round"
-                    style="font-size:16px"
-                    [style.color]="t.customColor || null"
-                  >{{ t.icon }}</span>
+                  <app-icon [icon]="t.icon" [size]="16"></app-icon>
                 }
                 {{ t.label }}
                 @if (showCount(t.count)) {

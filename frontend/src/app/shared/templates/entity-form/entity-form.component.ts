@@ -28,10 +28,11 @@ import { NgTemplateOutlet } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { FormField, type Field } from '@angular/forms/signals';
 import type { FormFieldConfig, FieldOption } from '../../types/crud-page.types';
+import { AppIconComponent } from '../../icons/app-icon.component';
 
 @Component({
   selector: 'app-entity-form',
-  imports: [NgTemplateOutlet, FormsModule, FormField],
+  imports: [NgTemplateOutlet, FormsModule, FormField, AppIconComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './entity-form.component.html',
   styleUrl: './entity-form.component.scss',

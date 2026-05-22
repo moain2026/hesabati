@@ -8,7 +8,7 @@
   <div class="valex-card-header">
     <div class="flex items-center gap-3">
       <div class="w-9 h-9 rounded-lg flex items-center justify-center bg-primary/10 text-primary">
-        <span class="material-icons-round">{{ icon() }}</span>
+        <app-icon [icon]="icon()" [size]="22"></app-icon>
       </div>
       <h3 class="valex-card-title">{{ title() }}</h3>
       @if (isEditing()) {
@@ -16,7 +16,7 @@
       }
     </div>
     <button class="valex-icon-btn" type="button" (click)="onCancel()">
-      <span class="material-icons-round">close</span>
+      <app-icon icon="fluent-emoji:cross-mark" [size]="18"></app-icon>
     </button>
   </div>
 
@@ -28,7 +28,7 @@
           <div [class]="colSpanClass(field.colSpan)">
             <label class="valex-label" [for]="'fld-' + field.key">
               @if (field.icon) {
-                <span class="material-icons-round" style="font-size: 16px; vertical-align: middle">{{ field.icon }}</span>
+                <app-icon [icon]="field.icon" [size]="16"></app-icon>
               }
               {{ field.label }}
               @if (field.required) {
@@ -223,7 +223,7 @@
             <!-- Error message -->
             @if (isFieldInvalid(field.key)) {
               <small class="text-danger text-xs block mt-1">
-                <span class="material-icons-round" style="font-size: 14px; vertical-align: middle">error</span>
+                <app-icon icon="fluent-emoji:warning" [size]="14"></app-icon>
                 {{ firstError(field.key) || field.errorMessage || 'قيمة غير صحيحة' }}
               </small>
             }
@@ -241,7 +241,7 @@
             <span class="valex-spinner spinner-sm"></span>
             جاري الحفظ...
           } @else {
-            <span class="material-icons-round">save</span>
+            <app-icon icon="fluent-emoji:floppy-disk" [size]="18"></app-icon>
             {{ saveLabel() }}
           }
         </button>

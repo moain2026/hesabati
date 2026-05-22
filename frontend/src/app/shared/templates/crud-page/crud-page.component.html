@@ -11,7 +11,7 @@
   >
     @if (canCreate()) {
       <button class="valex-btn valex-btn-primary" type="button" (click)="onCreate()">
-        <span class="material-icons-round">add</span>
+        <app-icon icon="fluent-emoji:plus" [size]="18"></app-icon>
         {{ createLabel() }}
       </button>
     }
@@ -58,7 +58,7 @@
       } @else {
         <div class="valex-card">
           <div class="valex-card-body flex items-center gap-3">
-            <span class="material-icons-round text-muted">search</span>
+            <app-icon icon="fluent-emoji:magnifying-glass-tilted-left" [size]="20"></app-icon>
             <input
               type="search"
               class="valex-input"
