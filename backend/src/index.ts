@@ -14,11 +14,9 @@ import { logger } from "hono/logger";
 import authRoutes from "./routes/auth.ts";
 import dashboardRoutes from "./routes/dashboard.ts";
 import apiRoutes from "./routes/api/index.ts";
-import enhancementRoutes from "./routes/enhancements.ts";
-import {
-  vouchersListRouter,
-  vouchersWriteRouter,
-} from "./routes/api/vouchers.routes.ts";
+import { vouchersListRouter } from "./routes/api/vouchers-list.routes.ts";
+import { vouchersCreateRouter } from "./routes/api/vouchers-create.routes.ts";
+import { vouchersUpdateRouter } from "./routes/api/vouchers-update.routes.ts";
 import operationEnhRoutes from "./routes/api/operation-enhancements.routes.ts";
 import sidebarEnhRoutes from "./routes/api/sidebar-enhancements.routes.ts";
 import screenEnhRoutes from "./routes/api/screen-enhancements.routes.ts";
@@ -128,9 +126,9 @@ app.route("/api/maintenance", maintenanceRoutes);
 
 app.route("/api/dashboard", dashboardRoutes);
 app.route("/api", apiRoutes);
-app.route("/api", enhancementRoutes);
 app.route("/api", vouchersListRouter);
-app.route("/api", vouchersWriteRouter);
+app.route("/api", vouchersCreateRouter);
+app.route("/api", vouchersUpdateRouter);
 app.route("/api", operationEnhRoutes);
 app.route("/api", sidebarEnhRoutes);
 app.route("/api", screenEnhRoutes);
