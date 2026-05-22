@@ -51,6 +51,14 @@ export class VouchersComponent extends BasePageComponent {
 
   // ===== Tab =====
   activeTab = signal<string>('all');
+
+  /** Tab items for voucher type filter (TabBarComponent) */
+  voucherTabs = computed(() => [
+    { value: 'all',     label: 'الكل', icon: 'menu_book',     count: this.vouchers().length },
+    { value: 'receipt', label: 'قبض',  icon: 'call_received', count: this.stats().receipts },
+    { value: 'payment', label: 'صرف',  icon: 'call_made',     count: this.stats().payments },
+  ]);
+
   filteredVouchers = computed(() => {
     const tab = this.activeTab();
     const all = this.vouchers();

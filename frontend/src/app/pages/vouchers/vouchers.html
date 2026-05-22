@@ -19,24 +19,11 @@
   </div>
 
   @if (!loading() && !showForm()) {
-    <div class="valex-card mb-6">
-      <div class="valex-card-body py-3">
-        <div class="flex flex-wrap gap-2">
-          <button class="valex-tab-btn" [class.active]="activeTab() === 'all'" (click)="activeTab.set('all')">
-            <span class="material-icons-round">menu_book</span> الكل
-            <span class="valex-badge valex-badge-secondary voucher-tab-count">{{ vouchers().length }}</span>
-          </button>
-          <button class="valex-tab-btn" [class.active]="activeTab() === 'receipt'" (click)="activeTab.set('receipt')">
-            <span class="material-icons-round">call_received</span> قبض
-            <span class="valex-badge valex-badge-secondary voucher-tab-count">{{ stats().receipts }}</span>
-          </button>
-          <button class="valex-tab-btn" [class.active]="activeTab() === 'payment'" (click)="activeTab.set('payment')">
-            <span class="material-icons-round">call_made</span> صرف
-            <span class="valex-badge valex-badge-secondary voucher-tab-count">{{ stats().payments }}</span>
-          </button>
-        </div>
-      </div>
-    </div>
+    <app-tab-bar
+      [tabs]="voucherTabs()"
+      [activeValue]="activeTab()"
+      (tabChange)="activeTab.set($event)"
+    />
   }
 
   @if (loading()) {

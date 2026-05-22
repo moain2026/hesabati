@@ -13,36 +13,23 @@
   </div>
 
   <!-- Filter Tabs -->
-  <div class="valex-card mb-4">
-    <div class="valex-card-body py-3">
-      <div class="flex flex-wrap gap-2 items-center justify-between">
-        <div class="flex flex-wrap gap-2">
-          @for (t of getFilterTabs(); track t.value) {
-            <button
-              class="valex-tab-btn"
-              [class.active]="activeFilter() === t.value"
-              (click)="activeFilter.set(t.value)"
-            >
-              <span class="material-icons-round" style="font-size:16px">{{ t.icon }}</span>
-              {{ t.label }}
-              <span class="valex-badge valex-badge-secondary" style="font-size:10px;min-width:18px;height:18px;padding:0 4px">{{ t.count }}</span>
-            </button>
-          }
-        </div>
-        <select
-          class="valex-select"
-          style="min-width:180px"
-          [ngModel]="accountFilter()"
-          (ngModelChange)="accountFilter.set($event ? +$event : null)"
-        >
-          <option [ngValue]="null">كل الحسابات</option>
-          @for (acc of uniqueAccounts(); track acc.id) {
-            <option [ngValue]="acc.id">{{ acc.name }} ({{ acc.code }})</option>
-          }
-        </select>
-      </div>
-    </div>
-  </div>
+  <app-tab-bar
+    [tabs]="getFilterTabs()"
+    [activeValue]="activeFilter()"
+    (tabChange)="activeFilter.set($event)"
+  >
+    <select
+      class="valex-select"
+      style="min-width:180px"
+      [ngModel]="accountFilter()"
+      (ngModelChange)="accountFilter.set($event ? +$event : null)"
+    >
+      <option [ngValue]="null">كل الحسابات</option>
+      @for (acc of uniqueAccounts(); track acc.id) {
+        <option [ngValue]="acc.id">{{ acc.name }} ({{ acc.code }})</option>
+      }
+    </select>
+  </app-tab-bar>
 
   @if (loading()) {
     <app-loading-state [loading]="loading()" />

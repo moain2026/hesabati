@@ -97,6 +97,17 @@ export class SuppliersComponent extends BaseCrudPageComponent<Supplier> {
     return Array.from(cats);
   }
 
+  /** Tab items for category filter (TabBarComponent) */
+  categoryTabs() {
+    const tabs: { value: string; label: string; icon?: string }[] = [
+      { value: 'all', label: 'الكل' },
+    ];
+    for (const cat of this.categories()) {
+      tabs.push({ value: cat, label: cat, icon: this.getCategoryIcon(cat) });
+    }
+    return tabs;
+  }
+
   filteredSuppliers() {
     let list = this.suppliers();
     const cat = this.filterCategory();

@@ -71,6 +71,19 @@ export class PendingAccountsComponent extends BaseCrudPageComponent<PendingAccou
   totalAmount() { return this.filteredItems().reduce((s, i) => s + Number(i.estimatedAmount || 0), 0); }
   pendingCount() { return this.items().filter(i => i.status === 'pending').length; }
   resolvedCount() { return this.items().filter(i => i.status === 'resolved').length; }
+  inProgressCount() { return this.items().filter(i => i.status === 'in_progress').length; }
+  writtenOffCount() { return this.items().filter(i => i.status === 'written_off').length; }
+
+  /** Tab items for status filter (TabBarComponent) */
+  statusTabs() {
+    return [
+      { value: 'all',         label: 'الكل',          count: this.items().length },
+      { value: 'pending',     label: 'معلق',          count: this.pendingCount() },
+      { value: 'in_progress', label: 'قيد المعالجة',  count: this.inProgressCount() },
+      { value: 'resolved',    label: 'تم الحل',       count: this.resolvedCount() },
+      { value: 'written_off', label: 'مشطوب',         count: this.writtenOffCount() },
+    ];
+  }
 
   async save() {
     this.saving.set(true);

@@ -58,24 +58,22 @@
       <div class="flex flex-col sm:flex-row gap-4">
         <div>
           <div class="text-xs text-muted font-semibold mb-2">النوع:</div>
-          <div class="flex flex-wrap gap-2">
-            <button class="valex-tab-btn" [class.active]="filterType() === 'all'" (click)="filterType.set('all')">الكل</button>
-            <button class="valex-tab-btn" [class.active]="filterType() === 'manager'" (click)="filterType.set('manager')">مدير</button>
-            <button class="valex-tab-btn" [class.active]="filterType() === 'exchange'" (click)="filterType.set('exchange')">صراف</button>
-            <button class="valex-tab-btn" [class.active]="filterType() === 'accountant'" (click)="filterType.set('accountant')">محاسب</button>
-            <button class="valex-tab-btn" [class.active]="filterType() === 'supplier'" (click)="filterType.set('supplier')">مورد</button>
-            <button class="valex-tab-btn" [class.active]="filterType() === 'custody'" (click)="filterType.set('custody')">عهدة</button>
-          </div>
+          <app-tab-bar
+            [tabs]="typeTabs"
+            [activeValue]="filterType()"
+            [wrapInCard]="false"
+            (tabChange)="filterType.set($event)"
+          />
         </div>
         <div class="border-r border-[var(--color-defaultborder)] hidden sm:block"></div>
         <div>
           <div class="text-xs text-muted font-semibold mb-2">الحالة:</div>
-          <div class="flex flex-wrap gap-2">
-            <button class="valex-tab-btn" [class.active]="filterStatus() === 'all'" (click)="filterStatus.set('all')">الكل</button>
-            <button class="valex-tab-btn" [class.active]="filterStatus() === 'open'" (click)="filterStatus.set('open')">مفتوحة</button>
-            <button class="valex-tab-btn" [class.active]="filterStatus() === 'in_progress'" (click)="filterStatus.set('in_progress')">قيد التنفيذ</button>
-            <button class="valex-tab-btn" [class.active]="filterStatus() === 'completed'" (click)="filterStatus.set('completed')">مكتملة</button>
-          </div>
+          <app-tab-bar
+            [tabs]="statusTabs"
+            [activeValue]="filterStatus()"
+            [wrapInCard]="false"
+            (tabChange)="filterStatus.set($event)"
+          />
         </div>
       </div>
     </div>

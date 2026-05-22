@@ -57,6 +57,9 @@ export class ReportsComponent extends BasePageComponent {
     { id: 'journal', label: 'القيود', icon: 'menu_book' },
   ];
 
+  /** TabBar items derived from reportTypes (id→value mapping) */
+  reportTabs = this.reportTypes.map(r => ({ value: r.id, label: r.label, icon: r.icon }));
+
   protected override onBizIdChange(_bizId: number): void {
     this.load();
   }

@@ -35,6 +35,28 @@ export class JournalComponent extends BasePageComponent {
   balancedCount(): number { return this.entries().filter(e => e.isBalanced).length; }
   draftCount(): number { return this.entries().filter(e => e.status === 'draft' || !e.status).length; }
   confirmedCount(): number { return this.entries().filter(e => e.status === 'confirmed').length; }
+  uncategorizedCount(): number { return this.entries().filter(e => !e.category).length; }
+  categoryCount(key: string): number { return this.entries().filter(e => e.category === key).length; }
+
+  /** Tab items for category filter (TabBarComponent) */
+  categoryTabs() {
+    const tabs: { value: string; label: string; icon: string; count: number }[] = [
+      { value: 'all', label: 'الكل', icon: 'menu_book', count: this.entries().length },
+    ];
+    for (const c of this.categories()) {
+      tabs.push({
+        value: c.categoryKey,
+        label: c.name,
+        icon: c.icon || 'label',
+        count: this.categoryCount(c.categoryKey),
+      });
+    }
+    const uncategorized = this.uncategorizedCount();
+    if (uncategorized > 0) {
+      tabs.push({ value: 'other', label: 'غير مصنف', icon: 'help_outline', count: uncategorized });
+    }
+    return tabs;
+  }
 
   accounts      = signal<any[]>([]);
   operationTypes= signal<any[]>([]);

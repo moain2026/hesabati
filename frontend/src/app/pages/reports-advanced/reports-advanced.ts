@@ -40,6 +40,9 @@ export class ReportsAdvancedComponent extends BasePageComponent {
     { key: 'monthly',        label: 'مقارنة شهرية',    icon: 'bar_chart' },
   ];
 
+  /** TabBar items derived from tabs (key→value mapping) */
+  tabBarItems = this.tabs.map(t => ({ value: t.key, label: t.label, icon: t.icon }));
+
   // ===== Filters =====
   dateFrom = new Date(new Date().getFullYear(), 0, 1).toISOString().split('T')[0];
   dateTo   = new Date().toISOString().split('T')[0];

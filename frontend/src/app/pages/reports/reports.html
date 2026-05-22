@@ -10,18 +10,11 @@
     </button>
   </app-page-header>
 
-  <div class="valex-card mb-6">
-    <div class="valex-card-body py-3">
-      <div class="flex flex-wrap gap-2">
-        @for (r of reportTypes; track r.id) {
-          <button class="valex-tab-btn" [class.active]="activeReport() === r.id" (click)="setReport(r.id)">
-            <span class="material-icons-round">{{ r.icon }}</span>
-            {{ r.label }}
-          </button>
-        }
-      </div>
-    </div>
-  </div>
+  <app-tab-bar
+    [tabs]="reportTabs"
+    [activeValue]="activeReport()"
+    (tabChange)="setReport($event)"
+  />
 
   @if (loading()) {
     <app-loading-state />

@@ -36,6 +36,24 @@ export class SettlementsComponent extends BaseCrudPageComponent<Settlement> {
   filterType = signal<string>('all');
   filterStatus = signal<string>('all');
 
+  /** Tab items for type filter (TabBarComponent) */
+  typeTabs = [
+    { value: 'all',        label: 'الكل' },
+    { value: 'manager',    label: 'مدير' },
+    { value: 'exchange',   label: 'صراف' },
+    { value: 'accountant', label: 'محاسب' },
+    { value: 'supplier',   label: 'مورد' },
+    { value: 'custody',    label: 'عهدة' },
+  ];
+
+  /** Tab items for status filter (TabBarComponent) */
+  statusTabs = [
+    { value: 'all',         label: 'الكل' },
+    { value: 'open',        label: 'مفتوحة' },
+    { value: 'in_progress', label: 'قيد التنفيذ' },
+    { value: 'completed',   label: 'مكتملة' },
+  ];
+
   private readonly defaultForm: SettlementForm = {
     title: '', reconciliationType: 'manager', status: 'open', withPerson: '',
     accountId: null, fundId: null, stationId: null,

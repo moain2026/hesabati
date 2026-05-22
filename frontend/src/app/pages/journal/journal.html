@@ -142,31 +142,11 @@
   }
 
   @if (!loading() && !showForm()) {
-    <div class="valex-card mb-6">
-      <div class="valex-card-body py-3">
-        <div class="flex flex-wrap gap-2">
-          <button class="valex-tab-btn" [class.active]="activeTab() === 'all'" (click)="activeTab.set('all')">
-            <span class="material-icons-round">menu_book</span>
-            الكل
-            <span class="valex-badge valex-badge-secondary journal-tab-count">{{ entries().length }}</span>
-          </button>
-          @for (c of categories(); track c.id) {
-            <button class="valex-tab-btn" [class.active]="activeTab() === c.categoryKey" (click)="activeTab.set(c.categoryKey)">
-              <span class="material-icons-round">{{ c.icon || 'label' }}</span>
-              {{ c.name }}
-              <span class="valex-badge valex-badge-secondary journal-tab-count">{{ entries().filter(e => e.category === c.categoryKey).length }}</span>
-            </button>
-          }
-          @if (entries().filter(e => !e.category).length > 0) {
-            <button class="valex-tab-btn" [class.active]="activeTab() === 'other'" (click)="activeTab.set('other')">
-              <span class="material-icons-round">help_outline</span>
-              غير مصنف
-              <span class="valex-badge valex-badge-secondary journal-tab-count">{{ entries().filter(e => !e.category).length }}</span>
-            </button>
-          }
-        </div>
-      </div>
-    </div>
+    <app-tab-bar
+      [tabs]="categoryTabs()"
+      [activeValue]="activeTab()"
+      (tabChange)="activeTab.set($event)"
+    />
   }
 
   @if (!loading() && !showForm()) {

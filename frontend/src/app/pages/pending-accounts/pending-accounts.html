@@ -47,17 +47,11 @@
   </div>
 
   <!-- Filter Tabs -->
-  <div class="valex-card mb-6">
-    <div class="valex-card-body py-3">
-      <div class="flex flex-wrap gap-2">
-        <button class="valex-tab-btn" [class.active]="filterStatus() === 'all'" (click)="filterStatus.set('all')">الكل ({{ items().length }})</button>
-        <button class="valex-tab-btn" [class.active]="filterStatus() === 'pending'" (click)="filterStatus.set('pending')">معلق ({{ pendingCount() }})</button>
-        <button class="valex-tab-btn" [class.active]="filterStatus() === 'in_progress'" (click)="filterStatus.set('in_progress')">قيد المعالجة</button>
-        <button class="valex-tab-btn" [class.active]="filterStatus() === 'resolved'" (click)="filterStatus.set('resolved')">تم الحل ({{ resolvedCount() }})</button>
-        <button class="valex-tab-btn" [class.active]="filterStatus() === 'written_off'" (click)="filterStatus.set('written_off')">مشطوب</button>
-      </div>
-    </div>
-  </div>
+  <app-tab-bar
+    [tabs]="statusTabs()"
+    [activeValue]="filterStatus()"
+    (tabChange)="filterStatus.set($event)"
+  />
 
   @if (loading()) {
     <app-loading-state [loading]="loading()" />

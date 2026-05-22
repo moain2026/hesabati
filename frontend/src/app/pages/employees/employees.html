@@ -13,17 +13,11 @@
   </div>
 
   <!-- Filter Tabs -->
-  <div class="valex-card mb-6">
-    <div class="valex-card-body py-3">
-      <div class="flex flex-wrap gap-2">
-        <button class="valex-tab-btn" [class.active]="filterStation() === 'all'" (click)="filterStation.set('all')">الكل</button>
-        <button class="valex-tab-btn" [class.active]="filterStation() === 'admin'" (click)="filterStation.set('admin')">الإدارة</button>
-        @for (s of stations(); track s.id) {
-          <button class="valex-tab-btn" [class.active]="filterStation() === '' + s.id" (click)="filterStation.set('' + s.id)">{{ s.name }}</button>
-        }
-      </div>
-    </div>
-  </div>
+  <app-tab-bar
+    [tabs]="stationTabs()"
+    [activeValue]="filterStation()"
+    (tabChange)="filterStation.set($event)"
+  />
 
   @if (loading()) {
     <app-loading-state [loading]="loading()" />

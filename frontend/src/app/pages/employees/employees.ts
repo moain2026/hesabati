@@ -127,6 +127,15 @@ export class EmployeesComponent extends BaseCrudPageComponent<Employee> {
     return this.employees().filter(e => String(e.stationId) === f || (!e.stationId && f === 'admin'));
   }
 
+  /** Tab items for station filter (TabBarComponent) */
+  stationTabs() {
+    return [
+      { value: 'all', label: 'الكل' },
+      { value: 'admin', label: 'الإدارة' },
+      ...this.stations().map(s => ({ value: String(s.id), label: s.name as string })),
+    ];
+  }
+
   totalSalaries() { return this.filteredEmployees().reduce((s, e) => s + Number(e.salary || 0), 0); }
 
   async save() {
